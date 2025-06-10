@@ -11,12 +11,13 @@ from app.schemas import PedidoCreate, PedidoUpdate, PedidoRead, ContagemPedidos
 from logs.logger import get_logger
 
 logger = get_logger("MyBooks")
+
 router = APIRouter(prefix="/pedidos", tags=["Pedidos"])
 
 @router.post("/", response_model=Pedido)
 async def criar_pedido(pedido: PedidoCreate, session: AsyncSession = Depends(get_session)):
     try:
-        logger.info(f"Criando novo pedido: {pedido}")
+        logger.info(f"Criando pedido: {pedido}")
         novo_pedido = Pedido(**pedido.dict())
         session.add(novo_pedido)
         await session.commit()
@@ -37,8 +38,7 @@ async def atualizar_pedido(
 ):
     try:
         logger.info(f"Atualizando pedido ID {pedido_id}")
-        query = select(Pedido).where(Pedido.id == pedido_id)
-        result = await session.execute(query)
+        result = await session.execute(select(Pedido).where(Pedido.id == pedido_id))
         pedido = result.scalar_one_or_none()
 
         if not pedido:
@@ -52,7 +52,7 @@ async def atualizar_pedido(
         session.add(pedido)
         await session.commit()
         await session.refresh(pedido)
-        logger.info(f"Pedido ID {pedido_id} atualizado com sucesso")
+        logger.info(f"Pedido ID {pedido_id} atualizado")
         return pedido
     except IntegrityError as e:
         logger.error(f"Erro de integridade ao atualizar pedido ID {pedido_id}: {e}")
@@ -77,18 +77,17 @@ async def listar_pedidos(session: AsyncSession = Depends(get_session)):
 async def contar_pedidos(session: AsyncSession = Depends(get_session)):
     try:
         logger.info("Contando pedidos")
-        stmt = select(func.count(Pedido.id))
-        result = await session.execute(stmt)
+        result = await session.execute(select(func.count(Pedido.id)))
         total = result.scalar_one()
         logger.info(f"Total de pedidos: {total}")
         return ContagemPedidos(quantidade=total)
     except Exception:
         raise HTTPException(status_code=500, detail="Erro interno ao contar pedidos")
 
-@router.delete("/", response_model=dict)
+@router.delete("/{pedido_id}", response_model=dict)
 async def deletar_pedido(pedido_id: int, session: AsyncSession = Depends(get_session)):
     try:
-        logger.info(f"Deletando pedido ID {pedido_id}")
+        logger.info(f"Tentando deletar pedido ID {pedido_id}")
         pedido = await session.get(Pedido, pedido_id)
         if not pedido:
             logger.info(f"Pedido ID {pedido_id} não encontrado para deletar")
@@ -122,15 +121,15 @@ async def filtrar_pedidos(
         if usuario_id is not None:
             query = query.where(Pedido.usuario_id == usuario_id)
         if status:
-            query = query.where(Pedido.status == status)
+            query = query.where(Pedido.status.ilike(f"%{status}%"))
 
         result = await session.execute(query)
         pedidos = result.scalars().all()
 
         if data_pedido:
             try:
-                data_pedido_obj = datetime.strptime(data_pedido, "%Y-%m-%d").date()
-                pedidos = [p for p in pedidos if p.data_pedido == data_pedido_obj]
+                data_obj = datetime.strptime(data_pedido, "%Y-%m-%d").date()
+                pedidos = [p for p in pedidos if p.data_pedido == data_obj]
             except ValueError:
                 raise HTTPException(status_code=400, detail="Formato de data_pedido inválido (use AAAA-MM-DD).")
 
@@ -139,7 +138,7 @@ async def filtrar_pedidos(
         if valor_max is not None:
             pedidos = [p for p in pedidos if p.valor_total <= valor_max]
 
-        logger.info(f"{len(pedidos)} pedido(s) encontrado(s) com os filtros aplicados")
+        logger.info(f"{len(pedidos)} pedido(s) encontrado(s) com os filtros")
         return pedidos
     except HTTPException:
         raise
