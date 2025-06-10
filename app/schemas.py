@@ -31,7 +31,6 @@ class UsuarioCreate(BaseModel):
     cpf: str
     data_cadastro: date
 
-
 class PedidoCreate(BaseModel):
     usuario_id: Optional[int]
     data_pedido: date
