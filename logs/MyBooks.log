@@ -1,1 +1,31 @@
 2025-06-10 14:27:14,755 - INFO - MyBooks - Criando pagamento: pedido_id=3 data_pagamento=datetime.date(2025, 6, 10) valor=45.5 forma_pagamento='pix'
+2025-06-10 15:06:04,785 - INFO - MyBooks - Usuário criado com sucesso: 11 - jana (jana@gmail.com)
+2025-06-10 15:06:49,597 - INFO - MyBooks - Usuário criado com sucesso: 12 - jana (jana@gmail.com)
+2025-06-10 15:10:09,106 - INFO - MyBooks - Usuário criado: 13 - jana (jana@gmail.com)
+2025-06-10 15:12:35,493 - INFO - MyBooks - Listagem de usuários: 6 encontrados
+2025-06-10 15:16:16,599 - INFO - MyBooks - Usuário deletado: id=13
+2025-06-10 15:18:50,456 - INFO - MyBooks - Usuário atualizado: id=12
+2025-06-10 15:19:17,354 - INFO - MyBooks - Contagem de usuários: 5
+2025-06-10 15:19:30,803 - INFO - MyBooks - Filtro de usuários aplicado - Nome: jana, Email: None, CPF: None, Data Cadastro: None | 3 encontrados
+2025-06-10 15:19:40,598 - INFO - MyBooks - Filtro de usuários aplicado - Nome: janaina, Email: None, CPF: None, Data Cadastro: None | 2 encontrados
+2025-06-10 15:20:10,323 - INFO - MyBooks - Filtro de usuários aplicado - Nome: None, Email: None, CPF: 123.456.789-00, Data Cadastro: None | 1 encontrados
+2025-06-10 15:30:46,593 - INFO - MyBooks - Usuário deletado: id=12
+2025-06-10 15:30:55,049 - INFO - MyBooks - Listagem de usuários: 4 encontrados
+2025-06-10 15:31:22,088 - INFO - MyBooks - Usuário deletado: id=11
+2025-06-10 15:42:55,444 - INFO - MyBooks - Editora criada: 3 - Luz do saber
+2025-06-10 15:43:37,109 - WARNING - MyBooks - Tentativa de atualizar editora não encontrada: ID 2
+2025-06-10 15:43:54,643 - INFO - MyBooks - Listagem de editoras retornou 2 registros
+2025-06-10 15:44:01,857 - INFO - MyBooks - Editora atualizada: 3 - Luz do saber
+2025-06-10 15:44:16,945 - INFO - MyBooks - Editora deletada: ID 3
+2025-06-10 15:44:25,399 - INFO - MyBooks - Contagem de editoras: 1
+2025-06-10 15:44:43,956 - INFO - MyBooks - Filtro de editoras retornou 0 registros - Filtros usados: nome=Luz do saber, endereco=None, telefone=None, email=None
+2025-06-10 15:45:02,350 - INFO - MyBooks - Filtro de editoras retornou 0 registros - Filtros usados: nome=None, endereco=Fortaleza, telefone=None, email=None
+2025-06-10 15:45:07,075 - INFO - MyBooks - Filtro de editoras retornou 0 registros - Filtros usados: nome=None, endereco=Fortaleza CE, telefone=None, email=None
+2025-06-10 15:45:14,086 - INFO - MyBooks - Filtro de editoras retornou 1 registros - Filtros usados: nome=None, endereco=São Paulo, telefone=None, email=None
+2025-06-10 15:46:37,665 - INFO - MyBooks - Autor criado: 3 - Mo Zhi (mozhi@gmail.com)
+2025-06-10 15:46:49,638 - INFO - MyBooks - Listagem de autores retornou 2 registros
+2025-06-10 15:47:54,431 - INFO - MyBooks - Autor atualizado: 3 - Mo Zhi
+2025-06-10 15:48:05,564 - INFO - MyBooks - Contagem de autores: 2
+2025-06-10 15:48:15,586 - INFO - MyBooks - Filtro de autores retornou 1 registros - Filtros usados: nome=None, email=None, nacionalidade=Chinês, data_nascimento=None
+2025-06-10 15:48:27,587 - INFO - MyBooks - Filtro de autores retornou 0 registros - Filtros usados: nome=None, email=None, nacionalidade=Italiano, data_nascimento=None
+2025-06-10 15:48:41,955 - INFO - MyBooks - Autor deletado: ID 3

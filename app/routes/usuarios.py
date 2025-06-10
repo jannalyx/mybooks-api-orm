@@ -6,7 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_session
 from app.models import Usuario
 from app.schemas import UsuarioCreate, UsuarioUpdate, UsuarioRead, ContagemUsuarios
+from logs.logger import get_logger
 
+logger = get_logger("MyBooks")
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
 @router.post("/", response_model=Usuario)
@@ -15,12 +17,14 @@ async def criar_usuario(usuario: UsuarioCreate, session: AsyncSession = Depends(
     session.add(novo_usuario)
     await session.commit()
     await session.refresh(novo_usuario)
+    logger.info(f"Usuário criado com sucesso: {novo_usuario.id} - {novo_usuario.nome} ({novo_usuario.email})")
     return novo_usuario
 
 @router.get("/", response_model=List[UsuarioRead])
 async def listar_usuarios(session: AsyncSession = Depends(get_session)):
     result = await session.execute(select(Usuario))
     usuarios = result.scalars().all()
+    logger.info(f"Listagem de usuários: {len(usuarios)} encontrados")
     return usuarios
 
 @router.patch("/{usuario_id}", response_model=Usuario)
@@ -34,6 +38,7 @@ async def atualizar_usuario(
     usuario = result.scalar_one_or_none()
 
     if not usuario:
+        logger.warning(f"Tentativa de atualizar usuário não encontrado: id={usuario_id}")
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
     update_data = usuario_update.dict(exclude_unset=True)
@@ -43,26 +48,32 @@ async def atualizar_usuario(
     session.add(usuario)
     await session.commit()
     await session.refresh(usuario)
+    logger.info(f"Usuário atualizado: id={usuario.id}")
     return usuario
 
 @router.get("/contar", response_model=ContagemUsuarios)
-async def contar_usuarios(session: AsyncSession = Depends(get_session)):
+async def contar_usuarios(session:
+     AsyncSession = Depends(get_session)):
     try:
         result = await session.execute(select(func.count(Usuario.id)))
         total = result.scalar()
+        logger.info(f"Contagem de usuários: {total}")
         return {"quantidade": total}
     except Exception as e:
+        logger.error(f"Erro ao contar usuários: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erro ao contar usuários: {str(e)}")
         
 @router.delete("/", response_model=dict)
 async def deletar_usuario(usuario_id: int, session: AsyncSession = Depends(get_session)):
     usuario = await session.get(Usuario, usuario_id)
     if not usuario:
+        logger.warning(f"Tentativa de deletar usuário não encontrado: id={usuario_id}")
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     
     await session.delete(usuario)
     await session.commit()
     
+    logger.info(f"Usuário deletado: id={usuario_id}")
     return {"message": "Usuário deletado com sucesso"}
 
 @router.get("/filtrar", response_model=List[UsuarioRead])
@@ -92,4 +103,7 @@ async def filtrar_usuarios(
             raise HTTPException(status_code=400, detail="Formato de data_cadastro inválido. Use DD-MM-AAAA.")
         usuarios = [u for u in usuarios if u.data_cadastro == data_obj]
 
+    logger.info(
+        f"Filtro de usuários aplicado - Nome: {nome}, Email: {email}, CPF: {cpf}, Data Cadastro: {data_cadastro} | {len(usuarios)} encontrados"
+    )    
     return usuarios
