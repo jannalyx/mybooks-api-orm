@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
+from datetime import datetime
+from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List, Optional, Dict
 from sqlalchemy import func
 from sqlmodel import select
@@ -63,3 +64,36 @@ async def deletar_pedido(pedido_id: int, session: AsyncSession = Depends(get_ses
     await session.delete(pedido)
     await session.commit()
     return {"message": "Pedido deletado com sucesso"}
+
+@router.get("/filtrar", response_model=List[PedidoRead])
+async def filtrar_pedidos(
+    usuario_id: Optional[int] = Query(None),
+    status: Optional[str] = Query(None),
+    data_pedido: Optional[str] = Query(None),
+    valor_min: Optional[float] = Query(None),
+    valor_max: Optional[float] = Query(None),
+    session: AsyncSession = Depends(get_session)
+):
+    query = select(Pedido)
+
+    if usuario_id is not None:
+        query = query.where(Pedido.usuario_id == usuario_id)
+    if status:
+        query = query.where(Pedido.status == status)
+
+    result = await session.execute(query)
+    pedidos = result.scalars().all()
+
+    if data_pedido:
+        try:
+            data_pedido_obj = datetime.strptime(data_pedido, "%Y-%m-%d").date()
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Formato de data_pedido inválido (use AAAA-MM-DD).")
+        pedidos = [p for p in pedidos if p.data_pedido == data_pedido_obj]
+
+    if valor_min is not None:
+        pedidos = [p for p in pedidos if p.valor_total >= valor_min]
+    if valor_max is not None:
+        pedidos = [p for p in pedidos if p.valor_total <= valor_max]
+
+    return pedidos

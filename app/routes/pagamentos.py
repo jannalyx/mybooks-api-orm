@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from datetime import datetime
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.future import select
@@ -59,3 +61,36 @@ async def deletar_pagamento(pagamento_id: int, session: AsyncSession = Depends(g
     await session.delete(pagamento)
     await session.commit()
     return {"message": "Pagamento deletado com sucesso"}
+
+@router.get("/filtrar", response_model=List[PagamentoRead])
+async def filtrar_pagamentos(
+    pedido_id: Optional[int] = Query(None),
+    data_pagamento: Optional[str] = Query(None), 
+    valor_min: Optional[float] = Query(None),
+    valor_max: Optional[float] = Query(None),
+    forma_pagamento: Optional[str] = Query(None),
+    session: AsyncSession = Depends(get_session)
+):
+    query = select(Pagamento)
+
+    if pedido_id is not None:
+        query = query.where(Pagamento.pedido_id == pedido_id)
+    if forma_pagamento:
+        query = query.where(Pagamento.forma_pagamento.ilike(f"%{forma_pagamento}%"))
+
+    result = await session.execute(query)
+    pagamentos = result.scalars().all()
+
+    if data_pagamento:
+        try:
+            data_obj = datetime.strptime(data_pagamento, "%d-%m-%Y").date()
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Formato de data_pagamento inválido (use DD-MM-AAAA).")
+        pagamentos = [p for p in pagamentos if p.data_pagamento == data_obj]
+
+    if valor_min is not None:
+        pagamentos = [p for p in pagamentos if p.valor >= valor_min]
+    if valor_max is not None:
+        pagamentos = [p for p in pagamentos if p.valor <= valor_max]
+
+    return pagamentos

@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Path
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlmodel import Session
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.future import select
 from app.database import get_session
@@ -60,3 +62,26 @@ async def deletar_editora(editora_id: int, session: AsyncSession = Depends(get_s
     await session.delete(editora)
     await session.commit()
     return {"message": "Editora deletada com sucesso"}
+
+@router.get("/filtro", response_model=List[EditoraRead])
+async def filtrar_editoras(
+    nome: Optional[str] = Query(None),
+    endereco: Optional[str] = Query(None),
+    telefone: Optional[str] = Query(None),
+    email: Optional[str] = Query(None),
+    session: AsyncSession = Depends(get_session)
+):
+    query = select(Editora)
+
+    if nome:
+        query = query.where(Editora.nome.ilike(f"%{nome}%"))
+    if endereco:
+        query = query.where(Editora.endereco.ilike(f"%{endereco}%"))
+    if telefone:
+        query = query.where(Editora.telefone.ilike(f"%{telefone}%"))
+    if email:
+        query = query.where(Editora.email.ilike(f"%{email}%"))
+
+    result = await session.execute(query)
+    editoras = result.scalars().all()
+    return editoras

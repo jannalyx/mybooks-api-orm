@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from datetime import datetime
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.future import select
 from app.database import get_session
@@ -58,3 +60,33 @@ async def deletar_autor(autor_id: int, session: AsyncSession = Depends(get_sessi
     await session.delete(autor)
     await session.commit()
     return {"message": "Autor deletado com sucesso"}
+
+
+@router.get("/filtrar", response_model=List[AutorRead])
+async def filtrar_autores(
+    nome: Optional[str] = Query(None),
+    email: Optional[str] = Query(None),
+    data_nascimento: Optional[str] = Query(None),  
+    nacionalidade: Optional[str] = Query(None),
+    session: AsyncSession = Depends(get_session)
+):
+    query = select(Autor)
+
+    if nome:
+        query = query.where(Autor.nome.ilike(f"%{nome}%"))
+    if email:
+        query = query.where(Autor.email.ilike(f"%{email}%"))
+    if nacionalidade:
+        query = query.where(Autor.nacionalidade.ilike(f"%{nacionalidade}%"))
+
+    result = await session.execute(query)
+    autores = result.scalars().all()
+
+    if data_nascimento:
+        try:
+            data_obj = datetime.strptime(data_nascimento, "%d-%m-%Y").date()
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Formato de data_nascimento inválido (use DD-MM-AAAA).")
+        autores = [a for a in autores if a.data_nascimento == data_obj]
+
+    return autores

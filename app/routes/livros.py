@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlmodel import Session
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.future import select
 from app.database import get_session
@@ -58,3 +60,32 @@ async def deletar_livro(livro_id: int, session: AsyncSession = Depends(get_sessi
     await session.delete(livro)
     await session.commit()
     return {"message": "Livro deletado com sucesso"}
+
+@router.get("/filtro", response_model=List[LivroRead])
+async def filtrar_livros(
+    titulo: Optional[str] = Query(None),
+    genero: Optional[str] = Query(None),
+    preco_min: Optional[float] = Query(None),
+    preco_max: Optional[float] = Query(None),
+    autor_id: Optional[int] = Query(None),
+    editora_id: Optional[int] = Query(None),
+    session: AsyncSession = Depends(get_session)
+):
+    query = select(Livro)
+
+    if titulo:
+        query = query.where(Livro.titulo.ilike(f"%{titulo}%"))
+    if genero:
+        query = query.where(Livro.genero == genero)
+    if preco_min is not None:
+        query = query.where(Livro.preco >= preco_min)
+    if preco_max is not None:
+        query = query.where(Livro.preco <= preco_max)
+    if autor_id:
+        query = query.where(Livro.autor_id == autor_id)
+    if editora_id:
+        query = query.where(Livro.editora_id == editora_id)
+
+    result = await session.execute(query)
+    livros = result.scalars().all()
+    return livros

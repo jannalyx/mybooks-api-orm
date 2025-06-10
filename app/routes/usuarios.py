@@ -1,5 +1,6 @@
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+from datetime import datetime
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_session
@@ -63,3 +64,32 @@ async def deletar_usuario(usuario_id: int, session: AsyncSession = Depends(get_s
     await session.commit()
     
     return {"message": "Usuário deletado com sucesso"}
+
+@router.get("/filtrar", response_model=List[UsuarioRead])
+async def filtrar_usuarios(
+    nome: Optional[str] = Query(None),
+    email: Optional[str] = Query(None),
+    cpf: Optional[str] = Query(None),
+    data_cadastro: Optional[str] = Query(None),
+    session: AsyncSession = Depends(get_session)
+):
+    query = select(Usuario)
+
+    if nome:
+        query = query.where(Usuario.nome.ilike(f"%{nome}%"))
+    if email:
+        query = query.where(Usuario.email.ilike(f"%{email}%"))
+    if cpf:
+        query = query.where(Usuario.cpf == cpf)
+
+    result = await session.execute(query)
+    usuarios = result.scalars().all()
+
+    if data_cadastro:
+        try:
+            data_obj = datetime.strptime(data_cadastro, "%d-%m-%Y").date()
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Formato de data_cadastro inválido. Use DD-MM-AAAA.")
+        usuarios = [u for u in usuarios if u.data_cadastro == data_obj]
+
+    return usuarios
