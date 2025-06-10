@@ -1,0 +1,1 @@
+2025-06-10 14:27:14,755 - INFO - MyBooks - Criando pagamento: pedido_id=3 data_pagamento=datetime.date(2025, 6, 10) valor=45.5 forma_pagamento='pix'
