@@ -3,7 +3,6 @@ import os
 from logging.config import fileConfig
 from sqlalchemy import create_engine
 from alembic import context
-from sqlmodel import SQLModel
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 

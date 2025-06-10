@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Optional, Dict
+from sqlalchemy import func
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from app.database import get_session
 from app.models import Pedido
-from app.schemas import PedidoCreate, PedidoUpdate
+from app.schemas import PedidoCreate, PedidoUpdate, PedidoRead, ContagemPedidos
 
 router = APIRouter(prefix="/pedidos", tags=["Pedidos"])
 
@@ -39,20 +40,19 @@ async def atualizar_pedido(
     await session.refresh(pedido)
     return pedido
 
-@router.get("/", response_model=List[Pedido])
+@router.get("/", response_model=List[PedidoRead])
 async def listar_pedidos(session: AsyncSession = Depends(get_session)):
     result = await session.exec(select(Pedido))
-    usuarios = result.all()
-    return Pedido
+    pedidos = result.all()
+    return pedidos
 
-@router.get("/contar", response_model=dict)
+@router.get("/contar", response_model=ContagemPedidos)
 async def contar_pedidos(session: AsyncSession = Depends(get_session)):
-    try:
-        result = await session.exec(select(func.count(Pedido.id)))
-        total = result.one()[0]
-        return {"quantidade": total}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao contar pedidos: {str(e)}")
+    stmt = select(func.count(Pedido.id))
+    result = await session.execute(stmt)
+    total = result.scalar_one()
+    return ContagemPedidos(quantidade=total)
+
 
 @router.delete("/", response_model=dict)
 async def deletar_pedido(pedido_id: int, session: AsyncSession = Depends(get_session)):

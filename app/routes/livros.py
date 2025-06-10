@@ -3,7 +3,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.future import select
 from app.database import get_session
 from app.models import Livro
-from app.schemas import LivroCreate, LivroUpdate
+from app.schemas import LivroCreate, LivroUpdate, LivroRead, LivroCount
 
 router = APIRouter(prefix="/livros", tags=["Livros"])
 
@@ -36,3 +36,25 @@ async def atualizar_livro(
     await session.commit()
     await session.refresh(livro)
     return livro
+
+@router.get("/", response_model=list[LivroRead])
+async def listar_livros(session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Livro))
+    livros = result.scalars().all()
+    return livros
+
+@router.get("/count", response_model=LivroCount)
+async def contar_livros(session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Livro))
+    count = len(result.scalars().all())
+    return LivroCount(total_livros=count)
+
+@router.delete("/", response_model=dict)
+async def deletar_livro(livro_id: int, session: AsyncSession = Depends(get_session)):
+    livro = await session.get(Livro, livro_id)
+    if not livro:
+        raise HTTPException(status_code=404, detail="Livro não encontrado")
+    
+    await session.delete(livro)
+    await session.commit()
+    return {"message": "Livro deletado com sucesso"}

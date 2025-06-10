@@ -18,6 +18,19 @@ class AutorUpdate(BaseModel):
     data_nascimento: Optional[date] = None
     nacionalidade: Optional[str] = None
 
+class AutorRead(BaseModel):
+    id: int
+    nome: str
+    email: str
+    data_nascimento: date
+    nacionalidade: str
+
+    class Config:
+        orm_mode = True
+
+class AutorCount(BaseModel):
+    total_autores: int
+
 
 # ----------- EDITORA -----------
 
@@ -33,6 +46,19 @@ class EditoraUpdate(BaseModel):
     endereco: Optional[str] = None
     telefone: Optional[str] = None
     email: Optional[str] = None
+
+class EditoraRead(BaseModel):
+    id: int
+    nome: str
+    endereco: str
+    telefone: str
+    email: str
+
+    class Config:
+        orm_mode = True
+
+class EditoraCount(BaseModel):
+    total_editoras: int
 
 
 # ----------- LIVRO -----------
@@ -52,6 +78,20 @@ class LivroUpdate(BaseModel):
     autor_id: Optional[int] = None
     editora_id: Optional[int] = None
 
+class LivroRead(BaseModel):
+    id: int
+    titulo: str
+    preco: float
+    genero: str
+    autor_id: Optional[int]
+    editora_id: Optional[int]
+
+    class Config:
+        orm_mode = True
+
+class LivroCount(BaseModel):
+    total_livros: int
+
 
 # ----------- USUÁRIO -----------
 
@@ -61,6 +101,15 @@ class UsuarioCreate(BaseModel):
     cpf: str
     data_cadastro: date
 
+class UsuarioRead(BaseModel):
+    id: int
+    nome: str
+    email: str
+    cpf: str
+    data_cadastro: Optional[date] = None
+
+class ContagemUsuarios(BaseModel):
+    quantidade: int
 
 class UsuarioUpdate(BaseModel):
     nome: Optional[str] = None
@@ -84,6 +133,18 @@ class PedidoUpdate(BaseModel):
     status: Optional[str] = None
     valor_total: Optional[float] = None
 
+class PedidoRead(BaseModel):
+    id: int
+    usuario_id: int
+    data_pedido: date
+    status: str
+    valor_total: float
+
+class ContagemPedidos(BaseModel):
+    quantidade: int
+
+class Config:
+    orm_mode = True
 
 # ----------- PAGAMENTO -----------
 
@@ -99,3 +160,16 @@ class PagamentoUpdate(BaseModel):
     data_pagamento: Optional[date] = None
     valor: Optional[float] = None
     forma_pagamento: Optional[str] = None
+
+class PagamentoRead(BaseModel):
+    id: int
+    pedido_id: Optional[int]
+    data_pagamento: date
+    valor: float
+    forma_pagamento: str
+
+class PagamentoCount(BaseModel):
+    total_pagamentos: int
+
+    class Config:
+        orm_mode = True

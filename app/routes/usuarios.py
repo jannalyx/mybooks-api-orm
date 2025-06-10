@@ -1,11 +1,10 @@
-import select
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import func
-from sqlmodel.ext.asyncio.session import AsyncSession
+from sqlalchemy import select, func
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_session
 from app.models import Usuario
-from app.schemas import UsuarioCreate, UsuarioUpdate
+from app.schemas import UsuarioCreate, UsuarioUpdate, UsuarioRead, ContagemUsuarios
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
@@ -17,10 +16,10 @@ async def criar_usuario(usuario: UsuarioCreate, session: AsyncSession = Depends(
     await session.refresh(novo_usuario)
     return novo_usuario
 
-@router.get("/", response_model=List[Usuario])
+@router.get("/", response_model=List[UsuarioRead])
 async def listar_usuarios(session: AsyncSession = Depends(get_session)):
-    result = await session.exec(select(Usuario))
-    usuarios = result.all()
+    result = await session.execute(select(Usuario))
+    usuarios = result.scalars().all()
     return usuarios
 
 @router.patch("/{usuario_id}", response_model=Usuario)
@@ -45,19 +44,22 @@ async def atualizar_usuario(
     await session.refresh(usuario)
     return usuario
 
-@router.get("/contar", response_model=dict)
+@router.get("/contar", response_model=ContagemUsuarios)
 async def contar_usuarios(session: AsyncSession = Depends(get_session)):
     try:
-        result = await session.exec(select(func.count(Usuario.id)))
-        total = result.one()[0]
+        result = await session.execute(select(func.count(Usuario.id)))
+        total = result.scalar()
         return {"quantidade": total}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao contar usuários: {str(e)}")
         
-@router.delete("/}", response_model=dict)
+@router.delete("/", response_model=dict)
 async def deletar_usuario(usuario_id: int, session: AsyncSession = Depends(get_session)):
     usuario = await session.get(Usuario, usuario_id)
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
     await session.delete(usuario)
     await session.commit()
+    
+    return {"message": "Usuário deletado com sucesso"}
