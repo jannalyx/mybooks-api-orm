@@ -1,21 +1,19 @@
 from typing import Optional, List
 from datetime import date
 from sqlmodel import SQLModel, Field, Relationship
+from sqlalchemy import Column, Integer, ForeignKey
 
-# um autor pode ter vários livros
+
 class Autor(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     nome: str
     email: str
     data_nascimento: date
     nacionalidade: str
-
-    # novo campo
     biografia: Optional[str] = None
 
     livros: List["Livro"] = Relationship(back_populates="autor")
 
-# uma editora pode publicar vários livros
 class Editora(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     nome: str
@@ -25,8 +23,7 @@ class Editora(SQLModel, table=True):
 
     livros: List["Livro"] = Relationship(back_populates="editora")
 
-# relação N:N
-# um livro pode estar em vários pedidos e um pedido pode ter vários livros
+
 class PedidoLivroLink(SQLModel, table=True):
     pedido_id: Optional[int] = Field(default=None, foreign_key="pedido.id", primary_key=True)
     livro_id: Optional[int] = Field(default=None, foreign_key="livro.id", primary_key=True)
@@ -64,15 +61,18 @@ class Pedido(SQLModel, table=True):
 
     usuario: Optional[Usuario] = Relationship(back_populates="pedidos")
     livros: List[Livro] = Relationship(back_populates="pedidos", link_model=PedidoLivroLink)
-    pagamentos: List["Pagamento"] = Relationship(back_populates="pedido")
+    pagamento: Optional["Pagamento"] = Relationship(back_populates="pedido")
 
 
 class Pagamento(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    pedido_id: Optional[int] = Field(default=None, foreign_key="pedido.id")
+    pedido_id: Optional[int] = Field(
+        default=None,
+        sa_column=Column(Integer, ForeignKey("pedido.id"), unique=True)
+    )
     data_pagamento: date
     valor: float
     forma_pagamento: str
 
-    pedido: Optional[Pedido] = Relationship(back_populates="pagamentos")
+    pedido: Optional[Pedido] = Relationship(back_populates="pagamento")
 
