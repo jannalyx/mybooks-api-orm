@@ -79,3 +79,38 @@ NameError: name 'PaginatedPagamento' is not defined. Did you mean: 'PaginatedPag
 2025-06-11 00:24:38,677 - ERROR - MyBooks - Erro inesperado: name 'PedidoLivroLink' is not defined
 2025-06-11 00:25:20,407 - INFO - MyBooks - Criando pedido: usuario_id=2 data_pedido=datetime.date(2025, 6, 11) status='pendente' valor_total=85.5 livro_ids=[2, 3]
 2025-06-11 00:25:20,809 - INFO - MyBooks - Pedido criado com ID 8
+2025-06-11 00:58:41,948 - INFO - MyBooks - Contagem de usuários: 2
+2025-06-11 01:11:46,233 - INFO - MyBooks - Tentando deletar pedido ID 4
+2025-06-11 01:11:46,297 - INFO - MyBooks - Pedido ID 4 deletado com sucesso
+2025-06-11 01:11:49,223 - INFO - MyBooks - Tentando deletar pedido ID 5
+2025-06-11 01:11:49,252 - INFO - MyBooks - Pedido ID 5 deletado com sucesso
+2025-06-11 01:11:53,185 - INFO - MyBooks - Tentando deletar pedido ID 6
+2025-06-11 01:11:53,231 - INFO - MyBooks - Pedido ID 6 deletado com sucesso
+2025-06-11 01:11:55,359 - INFO - MyBooks - Tentando deletar pedido ID 7
+2025-06-11 01:11:55,382 - INFO - MyBooks - Pedido ID 7 deletado com sucesso
+2025-06-11 01:11:57,434 - INFO - MyBooks - Tentando deletar pedido ID 8
+2025-06-11 01:11:57,468 - INFO - MyBooks - Pedido ID 8 deletado com sucesso
+2025-06-11 01:13:33,450 - INFO - MyBooks - Tentando deletar pedido ID 3
+2025-06-11 01:13:33,497 - INFO - MyBooks - Pedido ID 3 deletado com sucesso
+2025-06-11 01:14:01,684 - INFO - MyBooks - Criando pedido: usuario_id=2 data_pedido=datetime.date(2025, 6, 11) status='pendente' valor_total=85.5 livro_ids=[2, 3]
+2025-06-11 01:14:01,736 - INFO - MyBooks - Pedido criado com ID 9
+2025-06-11 01:16:35,215 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=1
+2025-06-11 01:17:30,797 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=1
+2025-06-11 01:17:46,967 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=0
+2025-06-11 01:20:02,178 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=1
+2025-06-11 01:20:07,476 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=0
+2025-06-11 01:20:13,863 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=0
+2025-06-11 01:20:31,561 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=1
+2025-06-11 01:24:38,960 - INFO - MyBooks - Filtrando pagamentos por pedido_id=1
+2025-06-11 01:24:45,743 - INFO - MyBooks - Filtrando pagamentos por pedido_id=2
+2025-06-11 01:25:56,691 - INFO - MyBooks - Filtrando pedidos por usuario_id=1
+2025-06-11 01:26:02,271 - INFO - MyBooks - Filtrando pedidos por usuario_id=9
+2025-06-11 01:26:08,261 - INFO - MyBooks - Filtrando pedidos por usuario_id=2
+2025-06-11 01:34:23,376 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, filtro nome=Clarice, retornando 1 de 1 registros
+2025-06-11 01:36:20,366 - INFO - MyBooks - Filtro de livros paginado retornou 2 de 2 registros - Filtros usados: titulo='harry'
+2025-06-11 01:36:33,562 - INFO - MyBooks - Filtro de livros paginado retornou 1 de 1 registros - Filtros usados: titulo='pedra'
+2025-06-11 01:36:43,032 - INFO - MyBooks - Filtro de livros paginado retornou 1 de 1 registros - Filtros usados: titulo='fênix'
+2025-06-11 01:38:23,925 - WARNING - MyBooks - Formato de data_nascimento inválido recebido: 1920-12-10
+2025-06-11 01:38:36,502 - WARNING - MyBooks - Formato de data_nascimento inválido recebido: 1920 12 10
+2025-06-11 01:42:32,995 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, retornando 2 de 2 registros
+2025-06-11 01:44:01,330 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=None

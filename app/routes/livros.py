@@ -1,4 +1,5 @@
 from typing import List, Optional
+from sqlalchemy import func
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.future import select
@@ -10,6 +11,14 @@ from app.schemas import LivroCreate, LivroUpdate, LivroRead, LivroCount, Paginat
 logger = get_logger("MyBooks")
 
 router = APIRouter(prefix="/livros", tags=["Livros"])
+
+@router.get("/livros/{id}", response_model=Livro)
+async def obter_livro_por_id(id: int, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Livro).where(Livro.id == id))
+    livro = result.scalar_one_or_none()
+    if not livro:
+        raise HTTPException(status_code=404, detail="Livro não encontrado")
+    return livro
 
 @router.post("/", response_model=Livro)
 async def criar_livro(livro: LivroCreate, session: AsyncSession = Depends(get_session)):
@@ -46,19 +55,25 @@ async def atualizar_livro(
 
 @router.get("/", response_model=PaginatedLivros)
 async def listar_livros(
-    session: AsyncSession = Depends(get_session),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(10, ge=1)
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1),
+    autor_id: Optional[int] = Query(None),
+    session: AsyncSession = Depends(get_session)
 ):
-    query = select(Livro).offset(skip).limit(limit)
-    result = await session.execute(query)
+    logger.info(f"Listando livros - página {page}, limite {limit}, autor_id={autor_id}")
+    offset = (page - 1) * limit
+
+    query = select(Livro)
+    if autor_id is not None:
+        query = query.where(Livro.autor_id == autor_id)
+
+    total_result = await session.execute(select(func.count()).select_from(query.subquery()))
+    total = total_result.scalar()
+
+    result = await session.execute(query.offset(offset).limit(limit))
     livros = result.scalars().all()
 
-    total_result = await session.execute(select(Livro))
-    total = len(total_result.scalars().all())
-
-    logger.info(f"Listagem paginada de livros: {len(livros)} de {total}")
-    return {"total": total, "items": livros}
+    return PaginatedLivros(page=page, limit=limit, total=total, items=livros)
 
 
 @router.get("/count", response_model=LivroCount)

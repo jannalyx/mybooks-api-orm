@@ -13,6 +13,14 @@ logger = get_logger("MyBooks")
 
 router = APIRouter(prefix="/pagamentos", tags=["Pagamentos"])
 
+@router.get("/pagamentos/{id}", response_model=Pagamento)
+async def obter_pagamento_por_id(id: int, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Pagamento).where(Pagamento.id == id))
+    pagamento = result.scalar_one_or_none()
+    if not pagamento:
+        raise HTTPException(status_code=404, detail="Pagamento não encontrado")
+    return pagamento
+
 @router.post("/", response_model=Pagamento)
 async def criar_pagamento(pagamento: PagamentoCreate, session: AsyncSession = Depends(get_session)):
     try:
@@ -56,27 +64,27 @@ async def atualizar_pagamento(
         logger.error(f"Erro ao atualizar pagamento ID {pagamento_id}", exc_info=True)
         raise HTTPException(status_code=500, detail="Erro interno ao atualizar pagamento")
 
-@router.get("/listar", response_model=PaginatedPagamentos)
+@router.get("/", response_model=PaginatedPagamentos)
 async def listar_pagamentos(
+    pedido_id: Optional[int] = Query(None),
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1),
     session: AsyncSession = Depends(get_session)
 ):
-    try:
-        offset = (page - 1) * limit
+    offset = (page - 1) * limit
 
-        total_result = await session.execute(select(func.count(Pagamento.id)))
-        total = total_result.scalar_one()
+    query = select(Pagamento)
+    if pedido_id is not None:
+        logger.info(f"Filtrando pagamentos por pedido_id={pedido_id}")
+        query = query.where(Pagamento.pedido_id == pedido_id)
 
-        result = await session.execute(select(Pagamento).offset(offset).limit(limit))
-        pagamentos = result.scalars().all()
+    total_result = await session.execute(select(func.count()).select_from(query.subquery()))
+    total = total_result.scalar()
 
-        logger.info(f"Listagem paginada de pagamentos: página {page}, limite {limit}, total {total}")
-        return PaginatedPagamentos(page=page, limit=limit, total=total, items=pagamentos)
-    except Exception:
-        logger.error("Erro ao listar pagamentos com paginação", exc_info=True)
-        raise HTTPException(status_code=500, detail="Erro interno ao listar pagamentos")
+    result = await session.execute(query.offset(offset).limit(limit))
+    pagamentos = result.scalars().all()
 
+    return PaginatedPagamentos(page=page, limit=limit, total=total, items=pagamentos)
 
 @router.get("/count", response_model=PagamentoCount)
 async def contar_pagamentos(session: AsyncSession = Depends(get_session)):

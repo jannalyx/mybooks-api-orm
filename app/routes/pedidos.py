@@ -14,6 +14,14 @@ logger = get_logger("MyBooks")
 
 router = APIRouter(prefix="/pedidos", tags=["Pedidos"])
 
+@router.get("/pedidos/{id}", response_model=Pedido)
+async def obter_pedido_por_id(id: int, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Pedido).where(Pedido.id == id))
+    pedido = result.scalar_one_or_none()
+    if not pedido:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado")
+    return pedido
+
 @router.post("/", response_model=PedidoRead)
 async def criar_pedido(pedido: PedidoCreate, session: AsyncSession = Depends(get_session)):
     try:
@@ -81,24 +89,25 @@ async def atualizar_pedido(
 
 @router.get("/", response_model=PaginatedPedido)
 async def listar_pedidos(
+    usuario_id: Optional[int] = Query(None),
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1),
     session: AsyncSession = Depends(get_session)
 ):
-    try:
-        logger.info(f"Listando pedidos - Página: {page}, Limite: {limit}")
-        offset = (page - 1) * limit
+    offset = (page - 1) * limit
 
-        total_result = await session.execute(select(func.count(Pedido.id)))
-        total = total_result.scalar_one()
+    query = select(Pedido)
+    if usuario_id is not None:
+        logger.info(f"Filtrando pedidos por usuario_id={usuario_id}")
+        query = query.where(Pedido.usuario_id == usuario_id)
 
-        result = await session.execute(select(Pedido).offset(offset).limit(limit))
-        pedidos = result.scalars().all()
+    total_result = await session.execute(select(func.count()).select_from(query.subquery()))
+    total = total_result.scalar()
 
-        return PaginatedPedido(page=page, limit=limit, total=total, items=pedidos)
-    except Exception:
-        logger.error("Erro ao listar pedidos com paginação", exc_info=True)
-        raise HTTPException(status_code=500, detail="Erro interno ao listar pedidos")
+    result = await session.execute(query.offset(offset).limit(limit))
+    pedidos = result.scalars().all()
+
+    return PaginatedPedido(page=page, limit=limit, total=total, items=pedidos)
 
 @router.get("/contar", response_model=ContagemPedidos)
 async def contar_pedidos(session: AsyncSession = Depends(get_session)):

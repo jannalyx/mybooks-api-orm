@@ -11,6 +11,14 @@ from logs.logger import get_logger
 logger = get_logger("MyBooks")
 router = APIRouter(prefix="/editoras", tags=["Editoras"])
 
+@router.get("/editoras/{id}", response_model=Editora)
+async def obter_editora_por_id(id: int, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Editora).where(Editora.id == id))
+    editora = result.scalar_one_or_none()
+    if not editora:
+        raise HTTPException(status_code=404, detail="Editora não encontrada")
+    return editora
+
 @router.post("/", response_model=Editora)
 async def criar_editora(editora: EditoraCreate, session: AsyncSession = Depends(get_session)):
     nova_editora = Editora(**editora.dict())

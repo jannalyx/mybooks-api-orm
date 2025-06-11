@@ -11,6 +11,14 @@ from logs.logger import get_logger
 logger = get_logger("MyBooks")
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
+@router.get("/usuarios/{id}", response_model=Usuario)
+async def obter_usuario_por_id(id: int, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Usuario).where(Usuario.id == id))
+    usuario = result.scalar_one_or_none()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    return usuario
+
 @router.post("/", response_model=Usuario)
 async def criar_usuario(usuario: UsuarioCreate, session: AsyncSession = Depends(get_session)):
     novo_usuario = Usuario(**usuario.dict())

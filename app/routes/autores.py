@@ -11,6 +11,14 @@ from logs.logger import get_logger
 logger = get_logger("MyBooks")
 router = APIRouter(prefix="/autores", tags=["Autores"])
 
+@router.get("/autores/{id}", response_model=Autor)
+async def obter_autor_por_id(id: int, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(Autor).where(Autor.id == id))
+    autor = result.scalar_one_or_none()
+    if not autor:
+        raise HTTPException(status_code=404, detail="Autor não encontrado")
+    return autor
+
 @router.post("/", response_model=Autor)
 async def criar_autor(autor: AutorCreate, session: AsyncSession = Depends(get_session)):
     novo_autor = Autor(**autor.dict())
