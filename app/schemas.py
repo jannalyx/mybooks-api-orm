@@ -1,6 +1,10 @@
+from __future__ import annotations
+
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import date
+
+
 
 # ----------- AUTOR -----------
 
@@ -150,41 +154,6 @@ class PaginatedUsuario(BaseModel):
     total: int
     items: List[UsuarioRead]
 
-# ----------- PEDIDO -----------
-
-class PedidoCreate(BaseModel):
-    usuario_id: int
-    data_pedido: date
-    status: str
-    valor_total: float
-    livro_ids: List[int]
-
-
-class PedidoUpdate(BaseModel):
-    usuario_id: Optional[int] = None
-    data_pedido: Optional[date] = None
-    status: Optional[str] = None
-    valor_total: Optional[float] = None
-
-class PedidoRead(BaseModel):
-    id: int
-    usuario_id: int
-    data_pedido: date
-    status: str
-    valor_total: float
-
-class ContagemPedidos(BaseModel):
-    quantidade: int
-
-class Config:
-    orm_mode = True
-
-class PaginatedPedido(BaseModel):
-    page: int
-    limit: int
-    total: int
-    items: List[PedidoRead]
-
 # ----------- PAGAMENTO -----------
 
 class PagamentoCreate(BaseModel):
@@ -207,6 +176,9 @@ class PagamentoRead(BaseModel):
     valor: float
     forma_pagamento: str
 
+    class Config:
+        orm_mode = True
+
 class PagamentoCount(BaseModel):
     total_pagamentos: int
 
@@ -218,3 +190,44 @@ class PaginatedPagamentos(BaseModel):
     limit: int
     total: int
     items: List[PagamentoRead]
+
+# ----------- PEDIDO -----------
+
+class PedidoCreate(BaseModel):
+    usuario_id: int
+    data_pedido: date
+    status: str
+    valor_total: float
+    livro_ids: List[int]
+
+
+class PedidoUpdate(BaseModel):
+    usuario_id: Optional[int] = None
+    data_pedido: Optional[date] = None
+    status: Optional[str] = None
+    valor_total: Optional[float] = None
+
+class PedidoRead(BaseModel):
+    id: int
+    usuario_id: int
+    data_pedido: date
+    status: str
+    valor_total: float
+    pagamento: Optional[PagamentoRead] = None 
+
+    class Config:
+        orm_mode = True
+
+class ContagemPedidos(BaseModel):
+    quantidade: int
+
+class Config:
+    orm_mode = True
+
+class PaginatedPedido(BaseModel):
+    page: int
+    limit: int
+    total: int
+    items: List[PedidoRead]
+
+
