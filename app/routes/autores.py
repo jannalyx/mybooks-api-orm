@@ -120,6 +120,9 @@ async def filtrar_autores(
             raise HTTPException(status_code=400, detail="Formato de data_nascimento inválido (use DD-MM-AAAA).")
         autores_filtrados = [a for a in autores_filtrados if a.data_nascimento == data_obj]
 
+    if not autores_filtrados:
+            raise HTTPException(status_code=404, detail="Nenhum autor encontrado com os filtros informados.")
+
     total = len(autores_filtrados)
 
     start = (page - 1) * limit

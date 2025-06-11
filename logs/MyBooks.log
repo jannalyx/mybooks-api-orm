@@ -114,3 +114,174 @@ NameError: name 'PaginatedPagamento' is not defined. Did you mean: 'PaginatedPag
 2025-06-11 01:38:36,502 - WARNING - MyBooks - Formato de data_nascimento inválido recebido: 1920 12 10
 2025-06-11 01:42:32,995 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, retornando 2 de 2 registros
 2025-06-11 01:44:01,330 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=None
+2025-06-11 12:17:07,677 - INFO - MyBooks - Usuário criado com sucesso: 3 - Jamille Bezerra (jamillebezerra@gmail.com)
+2025-06-11 12:19:11,881 - INFO - MyBooks - Usuário atualizado: id=3
+2025-06-11 12:19:38,047 - INFO - MyBooks - Usuário criado com sucesso: 4 - string (string)
+2025-06-11 12:19:47,124 - INFO - MyBooks - Usuário deletado: id=4
+2025-06-11 12:23:04,380 - INFO - MyBooks - Filtro de usuários aplicado - Nome: beze, Email: None, CPF: None, Data Cadastro: None | 1 encontrados, página 1 com limite 10
+2025-06-11 12:23:16,547 - INFO - MyBooks - Filtro de usuários aplicado - Nome: None, Email: beze, CPF: None, Data Cadastro: None | 1 encontrados, página 1 com limite 10
+2025-06-11 12:23:53,258 - INFO - MyBooks - Filtro de usuários aplicado - Nome: None, Email: None, CPF: None, Data Cadastro: 11-06-2025 | 1 encontrados, página 1 com limite 10
+2025-06-11 12:33:17,526 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=1
+2025-06-11 13:04:01,819 - INFO - MyBooks - Contagem total de livros: 2
+2025-06-11 13:04:14,228 - INFO - MyBooks - Contagem de livros do autor_id=1: 2
+2025-06-11 13:05:21,284 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=1
+2025-06-11 13:07:29,816 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=1
+2025-06-11 13:09:30,967 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=None
+2025-06-11 13:13:03,378 - INFO - MyBooks - Buscando livro específico - livro_id=1
+2025-06-11 13:15:57,929 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=None
+2025-06-11 13:16:44,746 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=None
+2025-06-11 13:16:49,836 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=1
+2025-06-11 13:20:39,048 - INFO - MyBooks - Buscando detalhes do livro com id=1
+2025-06-11 13:22:02,904 - INFO - MyBooks - Buscando detalhes do livro com id=1
+2025-06-11 13:23:55,526 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=None
+2025-06-11 13:24:05,568 - INFO - MyBooks - Buscando detalhes do livro com id=2
+2025-06-11 13:25:03,657 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, retornando 2 de 2 registros
+2025-06-11 13:29:35,481 - INFO - MyBooks - Usuário criado com sucesso: 5 - Davi Jose (davi@example.com)
+2025-06-11 13:31:27,093 - INFO - MyBooks - Usuário criado com sucesso: 6 - Ana Silva (ana.silva@example.com)
+2025-06-11 13:31:54,161 - INFO - MyBooks - Usuário criado com sucesso: 7 - Bruno Costa (bruno.costa@example.com)
+2025-06-11 13:32:09,160 - INFO - MyBooks - Usuário criado com sucesso: 8 - Carla Mendes (carla.mendes@example.com)
+2025-06-11 13:32:23,631 - INFO - MyBooks - Usuário criado com sucesso: 9 - Diego Rocha (diego.rocha@example.com)
+2025-06-11 13:32:42,694 - INFO - MyBooks - Usuário criado com sucesso: 10 - Eduarda Lima (eduarda.lima@example.com)
+2025-06-11 13:34:10,217 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, retornando 2 de 2 registros
+2025-06-11 13:37:35,510 - INFO - MyBooks - Autor criado: 3 - William Shakespeare (william.shakespeare@example.com)
+2025-06-11 13:37:47,100 - INFO - MyBooks - Autor criado: 4 - Jane Austen (jane.austen@example.com)
+2025-06-11 13:37:56,890 - INFO - MyBooks - Autor criado: 5 - Gabriel García Márquez (gabriel.garcia@example.com)
+2025-06-11 13:38:07,264 - INFO - MyBooks - Autor criado: 6 - Machado de Assis (machado.assis@example.com)
+2025-06-11 13:38:15,486 - INFO - MyBooks - Autor criado: 7 - Virginia Woolf (virginia.woolf@example.com)
+2025-06-11 13:38:26,160 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, retornando 7 de 7 registros
+2025-06-11 13:38:47,167 - INFO - MyBooks - Autor criado: 8 - Charles Dickens (charles.dickens@example.com)
+2025-06-11 13:38:54,952 - INFO - MyBooks - Autor criado: 9 - Jorge Luis Borges (jorge.borges@example.com)
+2025-06-11 13:39:01,275 - INFO - MyBooks - Autor criado: 10 - Franz Kafka (franz.kafka@example.com)
+2025-06-11 13:39:12,106 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, retornando 10 de 10 registros
+2025-06-11 13:39:24,905 - INFO - MyBooks - Listagem paginada de editoras retornou 1 de 1 registros
+2025-06-11 13:40:40,933 - INFO - MyBooks - Editora criada: 2 - Penguin Random House
+2025-06-11 13:40:48,560 - INFO - MyBooks - Editora criada: 3 - HarperCollins
+2025-06-11 13:40:55,004 - INFO - MyBooks - Editora criada: 4 - Macmillan Publishers
+2025-06-11 13:41:01,263 - INFO - MyBooks - Editora criada: 5 - Simon & Schuster
+2025-06-11 13:41:06,532 - INFO - MyBooks - Editora criada: 6 - Bloomsbury Publishing
+2025-06-11 13:41:12,571 - INFO - MyBooks - Listagem paginada de editoras retornou 6 de 6 registros
+2025-06-11 13:41:28,396 - INFO - MyBooks - Contagem de editoras: 6
+2025-06-11 13:41:52,874 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=None
+2025-06-11 13:42:40,287 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, retornando 10 de 10 registros
+2025-06-11 13:43:48,850 - INFO - MyBooks - Livro criado: 4 - Romeu e Julieta
+2025-06-11 13:44:05,118 - INFO - MyBooks - Livro criado: 5 - Orgulho e Preconceito
+2025-06-11 13:44:14,758 - INFO - MyBooks - Livro criado: 6 - Cem Anos de Solidão
+2025-06-11 13:44:23,733 - INFO - MyBooks - Livro criado: 7 - Dom Casmurro
+2025-06-11 13:44:30,611 - INFO - MyBooks - Livro criado: 8 - Mrs. Dalloway
+2025-06-11 13:44:38,057 - INFO - MyBooks - Livro criado: 9 - Oliver Twist
+2025-06-11 13:44:46,661 - INFO - MyBooks - Livro criado: 10 - Ficciones
+2025-06-11 13:44:54,252 - INFO - MyBooks - Livro criado: 11 - A Metamorfose
+2025-06-11 13:45:56,497 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, retornando 10 de 10 registros
+2025-06-11 13:46:40,214 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=None
+2025-06-11 13:47:00,916 - INFO - MyBooks - Livro criado: 14 - Dom Casmurro
+2025-06-11 13:47:18,111 - INFO - MyBooks - Livro criado: 15 - A Hora da Estrela
+2025-06-11 13:47:29,955 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=None
+2025-06-11 13:47:35,629 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=None
+2025-06-11 13:49:26,568 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=None
+2025-06-11 13:50:22,141 - INFO - MyBooks - Criando pedido: usuario_id=1 data_pedido=datetime.date(2025, 6, 11) status='Pendente' valor_total=85.5 livro_ids=[2, 3]
+2025-06-11 13:50:22,182 - INFO - MyBooks - Pedido criado com ID 10
+2025-06-11 13:50:32,570 - INFO - MyBooks - Criando pedido: usuario_id=3 data_pedido=datetime.date(2025, 6, 11) status='Concluído' valor_total=49.9 livro_ids=[6]
+2025-06-11 13:50:32,607 - INFO - MyBooks - Pedido criado com ID 11
+2025-06-11 13:50:39,783 - INFO - MyBooks - Criando pedido: usuario_id=5 data_pedido=datetime.date(2025, 6, 11) status='Enviado' valor_total=64.8 livro_ids=[4, 7]
+2025-06-11 13:50:39,833 - INFO - MyBooks - Pedido criado com ID 12
+2025-06-11 13:50:46,324 - INFO - MyBooks - Criando pedido: usuario_id=7 data_pedido=datetime.date(2025, 6, 11) status='Cancelado' valor_total=39.9 livro_ids=[9]
+2025-06-11 13:50:46,358 - INFO - MyBooks - Pedido criado com ID 13
+2025-06-11 13:50:52,668 - INFO - MyBooks - Criando pedido: usuario_id=9 data_pedido=datetime.date(2025, 6, 11) status='Concluído' valor_total=69.8 livro_ids=[5, 11]
+2025-06-11 13:50:52,708 - INFO - MyBooks - Pedido criado com ID 14
+2025-06-11 13:52:55,549 - INFO - MyBooks - Pagamento criado: 8 - Pedido 1
+2025-06-11 13:53:05,922 - INFO - MyBooks - Pagamento criado: 9 - Pedido 2
+2025-06-11 13:53:17,058 - INFO - MyBooks - Pagamento criado: 10 - Pedido 11
+2025-06-11 13:53:22,826 - INFO - MyBooks - Pagamento criado: 11 - Pedido 12
+2025-06-11 13:53:28,915 - INFO - MyBooks - Pagamento criado: 12 - Pedido 14
+2025-06-11 13:54:22,915 - INFO - MyBooks - Pagamento deletado: ID 8
+2025-06-11 13:55:11,922 - INFO - MyBooks - Filtro de usuários aplicado - Nome: None, Email: None, CPF: None, Data Cadastro: 25-05-2026 | 0 encontrados, página 1 com limite 10
+2025-06-11 13:58:06,128 - INFO - MyBooks - Filtro de usuários aplicado - Nome: None, Email: None, CPF: None, Data Cadastro: 25-05-2026 | 0 encontrados, página 1 com limite 10
+2025-06-11 13:58:22,908 - INFO - MyBooks - Filtro de usuários aplicado - Nome: None, Email: None, CPF: None, Data Cadastro: 25-05-2025 | 0 encontrados, página 1 com limite 10
+2025-06-11 13:59:55,880 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=None
+2025-06-11 14:00:07,862 - INFO - MyBooks - Filtro de livros paginado retornou 2 de 2 registros - Filtros usados: titulo='Harry'
+2025-06-11 14:00:17,652 - INFO - MyBooks - Filtro de livros paginado retornou 0 de 0 registros - Filtros usados: titulo='Amado'
+2025-06-11 14:00:52,923 - WARNING - MyBooks - Nenhum livro encontrado com filtros: titulo='Amado'
+2025-06-11 14:01:10,036 - WARNING - MyBooks - Nenhum livro encontrado com filtros: genero='Terror', preco_min=10.0
+2025-06-11 14:02:26,721 - INFO - MyBooks - Filtro de livros paginado retornou 2 de 2 registros - Filtros usados: genero='Romance', preco_min=30.0, preco_max=35.0
+2025-06-11 14:10:33,824 - INFO - MyBooks - Filtro de usuários aplicado - Nome: julia, Email: None, CPF: None, Data Cadastro: None | 0 encontrados, página 1 com limite 10
+2025-06-11 14:11:43,438 - INFO - MyBooks - Filtro de usuários aplicado - Nome: Ja, Email: None, CPF: None, Data Cadastro: None | 2 encontrados, página 1 com limite 10
+2025-06-11 14:12:08,377 - INFO - MyBooks - Filtro de usuários aplicado - Nome: Ja, Email: None, CPF: None, Data Cadastro: 10-06-2025 | 1 encontrados, página 1 com limite 10
+2025-06-11 14:14:41,557 - INFO - MyBooks - Filtrando pedidos com paginação
+2025-06-11 14:14:41,829 - INFO - MyBooks - 2 pedido(s) retornado(s) com filtros: usuario_id=1
+2025-06-11 14:14:48,979 - INFO - MyBooks - Filtrando pedidos com paginação
+2025-06-11 14:15:39,556 - INFO - MyBooks - 4 pagamento(s) retornado(s) com filtros: data_pagamento=11-06-2025
+2025-06-11 14:18:32,838 - INFO - MyBooks - Filtrando pedidos com paginação
+2025-06-11 14:18:33,104 - INFO - MyBooks - 1 pedido(s) retornado(s) com filtros: usuario_id=5
+2025-06-11 14:18:38,788 - INFO - MyBooks - Filtrando pedidos com paginação
+2025-06-11 14:18:52,218 - WARNING - MyBooks - Nenhum livro encontrado com filtros: titulo='ana'
+2025-06-11 14:19:53,727 - INFO - MyBooks - Filtro de editoras paginado retornou 0 de 0 registros - Filtros: nome='maria'
+2025-06-11 14:20:19,001 - INFO - MyBooks - Listagem paginada de editoras retornou 6 de 6 registros
+2025-06-11 14:21:37,599 - INFO - MyBooks - Filtro de editoras paginado retornou 0 de 0 registros - Filtros: nome='Ana'
+2025-06-11 14:23:03,496 - INFO - MyBooks - Listagem paginada de editoras retornou 6 de 6 registros
+2025-06-11 14:23:12,700 - INFO - MyBooks - Filtro de editoras paginado retornou 2 de 2 registros - Filtros: nome='Bloomsbury Publishing'
+2025-06-11 14:24:36,205 - INFO - MyBooks - Filtro paginado de autores retornou 1 registros de 1 - Filtros usados: nome=Wi, email=None, nacionalidade=None, data_nascimento=None
+2025-06-11 14:24:44,642 - INFO - MyBooks - Filtro paginado de autores retornou 1 registros de 1 - Filtros usados: nome=None, email=None, nacionalidade=Brasileiro, data_nascimento=None
+2025-06-11 14:28:52,668 - INFO - MyBooks - Tentativa de criar usuário com CPF já cadastrado: CPF=56389247794, Nome=Wesley Freire, Email=wesleyfreire@gmail.com
+2025-06-11 14:35:09,155 - INFO - MyBooks - Usuário criado com sucesso: 11 - Jacqueline Bezerra (jack@gmail.com)
+2025-06-11 14:35:35,113 - INFO - MyBooks - Tentativa de criar usuário com CPF já cadastrado: CPF=48630257894, Nome=Jacqueline Bezerra, Email=jack@gmail.com
+2025-06-11 14:35:53,673 - INFO - MyBooks - Usuário deletado: id=7
+2025-06-11 14:36:43,263 - INFO - MyBooks - Usuário atualizado: id=2
+2025-06-11 14:36:56,195 - INFO - MyBooks - Contagem de usuários: 9
+2025-06-11 14:37:08,738 - INFO - MyBooks - Filtro de usuários aplicado - Nome: Wesley, Email: None, CPF: None, Data Cadastro: None | 1 encontrados, página 1 com limite 10
+2025-06-11 14:37:35,725 - INFO - MyBooks - Filtro de usuários aplicado - Nome: Wesley, Email: None, CPF: None, Data Cadastro: 11-06-2025 | 1 encontrados, página 1 com limite 10
+2025-06-11 14:41:12,667 - INFO - MyBooks - Usuário criado com sucesso: 12 - Vitor Pinheiro (vitor@gmail.com)
+2025-06-11 14:41:19,979 - INFO - MyBooks - Usuário deletado: id=12
+2025-06-11 14:41:23,323 - INFO - MyBooks - Usuário criado com sucesso: 13 - Vitor Pinheiro (vitor@gmail.com)
+2025-06-11 14:41:28,959 - INFO - MyBooks - Usuário deletado: id=13
+2025-06-11 14:46:02,439 - INFO - MyBooks - Filtro de usuários aplicado - Nome: None, Email: None, CPF: None, Data Cadastro: 12-05-1990 | 1 encontrados, página 1 com limite 10
+2025-06-11 14:48:36,450 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, retornando 10 de 10 registros
+2025-06-11 14:50:10,275 - INFO - MyBooks - Autor criado: 11 - string (string)
+2025-06-11 14:54:39,332 - INFO - MyBooks - Buscando detalhes do livro com id=1
+2025-06-11 14:54:55,014 - INFO - MyBooks - Buscando detalhes do livro com id=2
+2025-06-11 14:55:24,118 - INFO - MyBooks - Contagem de livros do autor_id=1: 2
+2025-06-11 14:56:02,418 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, retornando 10 de 11 registros
+2025-06-11 14:56:25,328 - INFO - MyBooks - Autor criado: 12 - string (string)
+2025-06-11 14:56:31,009 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, retornando 10 de 12 registros
+2025-06-11 14:56:45,933 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, retornando 10 de 12 registros
+2025-06-11 14:56:54,648 - INFO - MyBooks - Autor criado: 13 - string (string)
+2025-06-11 14:56:55,679 - INFO - MyBooks - Autor criado: 14 - string (string)
+2025-06-11 14:57:30,785 - INFO - MyBooks - Autor deletado: ID 11
+2025-06-11 14:57:35,127 - INFO - MyBooks - Autor deletado: ID 12
+2025-06-11 14:57:39,190 - INFO - MyBooks - Autor deletado: ID 13
+2025-06-11 14:57:43,318 - INFO - MyBooks - Autor deletado: ID 14
+2025-06-11 15:00:35,837 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, retornando 10 de 10 registros
+2025-06-11 15:03:26,724 - INFO - MyBooks - Autor atualizado: 10 - Franz Kafka
+2025-06-11 15:03:47,174 - INFO - MyBooks - Autor atualizado: 10 - Franz Kafka
+2025-06-11 15:04:32,002 - INFO - MyBooks - Contagem de autores: 10
+2025-06-11 15:04:59,272 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, retornando 10 de 10 registros
+2025-06-11 15:08:23,127 - INFO - MyBooks - Filtro paginado de autores retornou 1 registros de 1 - Filtros usados: nome=None, email=None, nacionalidade=None, data_nascimento=26-04-1564
+2025-06-11 15:12:12,992 - INFO - MyBooks - Listagem paginada de editoras retornou 6 de 6 registros
+2025-06-11 15:12:57,327 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=None
+2025-06-11 15:14:29,162 - INFO - MyBooks - Editora criada: 7 - Saber é Luz
+2025-06-11 15:15:01,392 - INFO - MyBooks - Editora deletada: ID 7
+2025-06-11 15:15:44,504 - INFO - MyBooks - Editora atualizada: 6 - Saber é Luz
+2025-06-11 15:16:36,666 - INFO - MyBooks - Contagem de editoras: 6
+2025-06-11 15:17:53,600 - INFO - MyBooks - Filtro de editoras paginado retornou 1 de 1 registros - Filtros: endereco='Fortaleza'
+2025-06-11 15:18:04,673 - INFO - MyBooks - Listagem paginada de editoras retornou 6 de 6 registros
+2025-06-11 15:19:56,197 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=4
+2025-06-11 15:20:38,695 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=None
+2025-06-11 15:21:31,290 - INFO - MyBooks - Livro criado: 16 - Clean Code
+2025-06-11 15:21:46,846 - INFO - MyBooks - Livro criado: 17 - Clean Code
+2025-06-11 15:22:15,324 - INFO - MyBooks - Livro deletado: ID 16
+2025-06-11 15:22:22,895 - INFO - MyBooks - Livro deletado: ID 17
+2025-06-11 15:26:25,378 - INFO - MyBooks - Contagem de livros do autor_id=1: 2
+2025-06-11 15:27:00,449 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=None
+2025-06-11 15:28:03,732 - INFO - MyBooks - Buscando detalhes do livro com id=2
+2025-06-11 15:28:56,329 - INFO - MyBooks - Contando pedidos
+2025-06-11 15:28:56,378 - INFO - MyBooks - Total de pedidos: 8
+2025-06-11 15:29:22,868 - INFO - MyBooks - Filtrando pedidos com paginação
+2025-06-11 15:29:50,569 - INFO - MyBooks - Filtrando pedidos com paginação
+2025-06-11 16:10:19,437 - INFO - MyBooks - Usuário criado com sucesso: 14 - Vitor Pinheiro (vitor@gmail.com)
+2025-06-11 16:11:04,584 - INFO - MyBooks - Filtro de usuários aplicado - Nome: None, Email: None, CPF: None, Data Cadastro: 11-06-2025 | 8 encontrados, página 1 com limite 10
+2025-06-11 16:11:13,787 - INFO - MyBooks - Filtro de usuários aplicado - Nome: jana, Email: None, CPF: None, Data Cadastro: None | 1 encontrados, página 1 com limite 10
+2025-06-11 16:11:41,121 - INFO - MyBooks - Contando pedidos
+2025-06-11 16:11:41,134 - INFO - MyBooks - Total de pedidos: 8
+2025-06-11 16:12:21,243 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=1
+2025-06-11 16:12:57,233 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=1
+2025-06-11 16:13:38,905 - INFO - MyBooks - Buscando detalhes do livro com id=2
+2025-06-11 16:15:13,887 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=1

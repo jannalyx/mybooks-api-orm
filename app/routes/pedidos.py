@@ -182,6 +182,9 @@ async def filtrar_pedidos(
             pedidos = [p for p in pedidos if p.valor_total <= valor_max]
             filtros_aplicados.append(f"valor_max={valor_max}")
 
+        if not pedidos:
+            raise HTTPException(status_code=404, detail="Nenhum pedido encontrado com os filtros informados.")
+
         total = len(pedidos)
         offset = (page - 1) * limit
         pedidos_paginados = pedidos[offset:offset + limit]

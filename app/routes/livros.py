@@ -1,12 +1,13 @@
 from typing import List, Optional
 from sqlalchemy import func
+from sqlalchemy.orm import joinedload
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.future import select
 from logs.logger import get_logger
 from app.database import get_session
 from app.models import Livro
-from app.schemas import LivroCreate, LivroUpdate, LivroRead, LivroCount, PaginatedLivros
+from app.schemas import LivroCreate, LivroUpdate, LivroRead, LivroCount, PaginatedLivros, LivroInfo
 
 logger = get_logger("MyBooks")
 
@@ -77,10 +78,23 @@ async def listar_livros(
 
 
 @router.get("/count", response_model=LivroCount)
-async def contar_livros(session: AsyncSession = Depends(get_session)):
-    result = await session.execute(select(Livro))
-    count = len(result.scalars().all())
-    logger.info(f"Contagem de livros: {count}")
+async def contar_livros(
+    autor_id: Optional[int] = Query(None),
+    session: AsyncSession = Depends(get_session)
+):
+    stmt = select(func.count()).select_from(Livro)
+
+    if autor_id is not None:
+        stmt = stmt.where(Livro.autor_id == autor_id)
+
+    result = await session.execute(stmt)
+    count = result.scalar_one()
+
+    if autor_id is not None:
+        logger.info(f"Contagem de livros do autor_id={autor_id}: {count}")
+    else:
+        logger.info(f"Contagem total de livros: {count}")
+
     return LivroCount(total_livros=count)
 
 @router.delete("/", response_model=dict)
@@ -135,6 +149,12 @@ async def filtrar_livros(
     result = await session.execute(paginated_query)
     livros = result.scalars().all()
 
+    if not livros:
+        logger.warning(
+            f"Nenhum livro encontrado com filtros: {', '.join(filtros_aplicados) or 'nenhum'}"
+        )
+        raise HTTPException(status_code=404, detail="Nenhum livro encontrado")
+
     total_result = await session.execute(query)
     total = len(total_result.scalars().all())
 
@@ -149,3 +169,26 @@ async def filtrar_livros(
         "total": total,
         "items": livros
     }
+
+@router.get("/detalhes", response_model=LivroInfo)
+async def detalhes_livro(
+    id: int = Query(..., description="ID do livro"),
+    session: AsyncSession = Depends(get_session)
+):
+    logger.info(f"Buscando detalhes do livro com id={id}")
+    query = (
+        select(Livro)
+        .where(Livro.id == id)
+        .options(joinedload(Livro.autor), joinedload(Livro.editora))
+    )
+    result = await session.execute(query)
+    livro = result.scalars().first()
+
+    if not livro:
+        raise HTTPException(status_code=404, detail="Livro não encontrado")
+
+    return LivroInfo(
+        titulo=livro.titulo,
+        autor=livro.autor.nome if livro.autor else None,
+        editora=livro.editora.nome if livro.editora else None
+    )

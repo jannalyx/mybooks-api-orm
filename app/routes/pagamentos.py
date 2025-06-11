@@ -155,6 +155,9 @@ async def filtrar_pagamentos(
             pagamentos = [p for p in pagamentos if p.valor <= valor_max]
             filtros_aplicados.append(f"valor_max={valor_max}")
 
+        if not pagamentos:
+            raise HTTPException(status_code=404, detail="Nenhum pagamento encontrado com os filtros informados.")
+
         total = len(pagamentos)
         offset = (page - 1) * limit
         pagamentos_paginados = pagamentos[offset:offset + limit]

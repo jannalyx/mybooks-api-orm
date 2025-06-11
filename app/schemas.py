@@ -115,6 +115,11 @@ class PaginatedLivros(BaseModel):
     total: int
     items: List[LivroRead]
 
+class LivroInfo(BaseModel):
+    titulo: str
+    autor: Optional[str]
+    editora: Optional[str]
+
 # ----------- USUÁRIO -----------
 
 class UsuarioCreate(BaseModel):

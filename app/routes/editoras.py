@@ -128,6 +128,9 @@ async def filtrar_editoras(
     result = await session.execute(paginated_query)
     editoras = result.scalars().all()
 
+    if not editoras:
+        raise HTTPException(status_code=404, detail="Nenhuma editora encontrada com os filtros informados.")
+
     total_result = await session.execute(query)
     total = len(total_result.scalars().all())
 

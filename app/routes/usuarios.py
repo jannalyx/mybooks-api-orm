@@ -7,6 +7,7 @@ from app.database import get_session
 from app.models import Usuario
 from app.schemas import UsuarioCreate, UsuarioUpdate, UsuarioRead, ContagemUsuarios, PaginatedUsuario
 from logs.logger import get_logger
+from fastapi import HTTPException
 
 logger = get_logger("MyBooks")
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
@@ -21,6 +22,14 @@ async def obter_usuario_por_id(id: int, session: AsyncSession = Depends(get_sess
 
 @router.post("/", response_model=Usuario)
 async def criar_usuario(usuario: UsuarioCreate, session: AsyncSession = Depends(get_session)):
+    query = select(Usuario).where(Usuario.cpf == usuario.cpf)
+    result = await session.execute(query)
+    usuario_existente = result.scalars().first()
+
+    if usuario_existente:
+        logger.info(f"Tentativa de criar usuário com CPF já cadastrado: CPF={usuario.cpf}, Nome={usuario.nome}, Email={usuario.email}")
+        raise HTTPException(status_code=400, detail="CPF já cadastrado")
+
     novo_usuario = Usuario(**usuario.dict())
     session.add(novo_usuario)
     await session.commit()
@@ -120,6 +129,9 @@ async def filtrar_usuarios(
         except ValueError:
             raise HTTPException(status_code=400, detail="Formato de data_cadastro inválido. Use DD-MM-AAAA.")
         usuarios_filtrados = [u for u in usuarios_filtrados if u.data_cadastro == data_obj]
+
+    if not usuarios_filtrados:
+        raise HTTPException(status_code=404, detail="Nenhum usuário encontrado com os filtros informados.")
 
     total = len(usuarios_filtrados)
 
