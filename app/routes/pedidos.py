@@ -7,7 +7,7 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from app.database import get_session
 from app.models import Pedido
-from app.schemas import PedidoCreate, PedidoUpdate, PedidoRead, ContagemPedidos
+from app.schemas import PedidoCreate, PedidoUpdate, PedidoRead, ContagemPedidos, PaginatedPedido
 from logs.logger import get_logger
 
 logger = get_logger("MyBooks")
@@ -62,15 +62,25 @@ async def atualizar_pedido(
     except Exception:
         raise HTTPException(status_code=500, detail="Erro interno ao atualizar pedido")
 
-@router.get("/", response_model=List[PedidoRead])
-async def listar_pedidos(session: AsyncSession = Depends(get_session)):
+@router.get("/", response_model=PaginatedPedido)
+async def listar_pedidos(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1),
+    session: AsyncSession = Depends(get_session)
+):
     try:
-        logger.info("Listando todos os pedidos")
-        result = await session.execute(select(Pedido))
+        logger.info(f"Listando pedidos - Página: {page}, Limite: {limit}")
+        offset = (page - 1) * limit
+
+        total_result = await session.execute(select(func.count(Pedido.id)))
+        total = total_result.scalar_one()
+
+        result = await session.execute(select(Pedido).offset(offset).limit(limit))
         pedidos = result.scalars().all()
-        logger.info(f"{len(pedidos)} pedido(s) encontrado(s)")
-        return pedidos
+
+        return PaginatedPedido(page=page, limit=limit, total=total, items=pedidos)
     except Exception:
+        logger.error("Erro ao listar pedidos com paginação", exc_info=True)
         raise HTTPException(status_code=500, detail="Erro interno ao listar pedidos")
 
 @router.get("/contar", response_model=ContagemPedidos)
@@ -105,23 +115,28 @@ async def deletar_pedido(pedido_id: int, session: AsyncSession = Depends(get_ses
     except Exception:
         raise HTTPException(status_code=500, detail="Erro interno ao deletar pedido")
 
-@router.get("/filtrar", response_model=List[PedidoRead])
+@router.get("/filtrar", response_model=PaginatedPedido)
 async def filtrar_pedidos(
     usuario_id: Optional[int] = Query(None),
     status: Optional[str] = Query(None),
     data_pedido: Optional[str] = Query(None),
     valor_min: Optional[float] = Query(None),
     valor_max: Optional[float] = Query(None),
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1),
     session: AsyncSession = Depends(get_session)
 ):
     try:
-        logger.info("Filtrando pedidos")
+        logger.info("Filtrando pedidos com paginação")
         query = select(Pedido)
+        filtros_aplicados = []
 
         if usuario_id is not None:
             query = query.where(Pedido.usuario_id == usuario_id)
+            filtros_aplicados.append(f"usuario_id={usuario_id}")
         if status:
             query = query.where(Pedido.status.ilike(f"%{status}%"))
+            filtros_aplicados.append(f"status='{status}'")
 
         result = await session.execute(query)
         pedidos = result.scalars().all()
@@ -130,17 +145,25 @@ async def filtrar_pedidos(
             try:
                 data_obj = datetime.strptime(data_pedido, "%Y-%m-%d").date()
                 pedidos = [p for p in pedidos if p.data_pedido == data_obj]
+                filtros_aplicados.append(f"data_pedido={data_pedido}")
             except ValueError:
                 raise HTTPException(status_code=400, detail="Formato de data_pedido inválido (use AAAA-MM-DD).")
 
         if valor_min is not None:
             pedidos = [p for p in pedidos if p.valor_total >= valor_min]
+            filtros_aplicados.append(f"valor_min={valor_min}")
         if valor_max is not None:
             pedidos = [p for p in pedidos if p.valor_total <= valor_max]
+            filtros_aplicados.append(f"valor_max={valor_max}")
 
-        logger.info(f"{len(pedidos)} pedido(s) encontrado(s) com os filtros")
-        return pedidos
+        total = len(pedidos)
+        offset = (page - 1) * limit
+        pedidos_paginados = pedidos[offset:offset + limit]
+
+        logger.info(f"{len(pedidos_paginados)} pedido(s) retornado(s) com filtros: {', '.join(filtros_aplicados) or 'nenhum'}")
+        return PaginatedPedido(page=page, limit=limit, total=total, items=pedidos_paginados)
     except HTTPException:
         raise
     except Exception:
+        logger.error("Erro ao filtrar pedidos com paginação", exc_info=True)
         raise HTTPException(status_code=500, detail="Erro interno ao filtrar pedidos")

@@ -10,6 +10,9 @@ class Autor(SQLModel, table=True):
     data_nascimento: date
     nacionalidade: str
 
+    # novo campo
+    biografia: Optional[str] = None
+
     livros: List["Livro"] = Relationship(back_populates="autor")
 
 

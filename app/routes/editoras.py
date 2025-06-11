@@ -5,7 +5,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.future import select
 from app.database import get_session
 from app.models import Editora
-from app.schemas import EditoraCreate,  EditoraUpdate, EditoraRead, EditoraCount
+from app.schemas import EditoraCreate,  EditoraUpdate, EditoraRead, EditoraCount, PaginatedEditoras
 from logs.logger import get_logger
 
 logger = get_logger("MyBooks")
@@ -46,12 +46,29 @@ async def atualizar_editora(
     logger.info(f"Editora atualizada: {editora.id} - {editora.nome}")
     return editora
 
-@router.get("/", response_model=list[EditoraRead])
-async def listar_editoras(session: AsyncSession = Depends(get_session)):
-    result = await session.execute(select(Editora))
+@router.get("/", response_model=PaginatedEditoras)
+async def listar_editoras(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1),
+    session: AsyncSession = Depends(get_session)
+):
+    query = select(Editora)
+
+    offset = (page - 1) * limit
+    paginated_query = query.offset(offset).limit(limit)
+    result = await session.execute(paginated_query)
     editoras = result.scalars().all()
-    logger.info(f"Listagem de editoras retornou {len(editoras)} registros")
-    return editoras
+
+    total_result = await session.execute(select(Editora))
+    total = len(total_result.scalars().all())
+
+    logger.info(f"Listagem paginada de editoras retornou {len(editoras)} de {total} registros")
+    return {
+        "page": page,
+        "limit": limit,
+        "total": total,
+        "items": editoras
+    }
 
 @router.get("/count", response_model=EditoraCount)
 async def contar_editoras(session: AsyncSession = Depends(get_session)):
@@ -72,26 +89,45 @@ async def deletar_editora(editora_id: int, session: AsyncSession = Depends(get_s
     logger.info(f"Editora deletada: ID {editora_id}")
     return {"message": "Editora deletada com sucesso"}
 
-@router.get("/filtro", response_model=List[EditoraRead])
+@router.get("/filtro", response_model=PaginatedEditoras)
 async def filtrar_editoras(
     nome: Optional[str] = Query(None),
     endereco: Optional[str] = Query(None),
     telefone: Optional[str] = Query(None),
     email: Optional[str] = Query(None),
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1),
     session: AsyncSession = Depends(get_session)
 ):
     query = select(Editora)
+    filtros_aplicados = []
 
     if nome:
         query = query.where(Editora.nome.ilike(f"%{nome}%"))
+        filtros_aplicados.append(f"nome='{nome}'")
     if endereco:
         query = query.where(Editora.endereco.ilike(f"%{endereco}%"))
+        filtros_aplicados.append(f"endereco='{endereco}'")
     if telefone:
         query = query.where(Editora.telefone.ilike(f"%{telefone}%"))
+        filtros_aplicados.append(f"telefone='{telefone}'")
     if email:
         query = query.where(Editora.email.ilike(f"%{email}%"))
+        filtros_aplicados.append(f"email='{email}'")
 
-    result = await session.execute(query)
+    offset = (page - 1) * limit
+    paginated_query = query.offset(offset).limit(limit)
+    result = await session.execute(paginated_query)
     editoras = result.scalars().all()
-    logger.info(f"Filtro de editoras retornou {len(editoras)} registros - Filtros usados: nome={nome}, endereco={endereco}, telefone={telefone}, email={email}")
-    return editoras
+
+    total_result = await session.execute(query)
+    total = len(total_result.scalars().all())
+
+    logger.info(f"Filtro de editoras paginado retornou {len(editoras)} de {total} registros - Filtros: {', '.join(filtros_aplicados) or 'nenhum'}")
+
+    return {
+        "page": page,
+        "limit": limit,
+        "total": total,
+        "items": editoras
+    }

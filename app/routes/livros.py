@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 from logs.logger import get_logger
 from app.database import get_session
 from app.models import Livro
-from app.schemas import LivroCreate, LivroUpdate, LivroRead, LivroCount
+from app.schemas import LivroCreate, LivroUpdate, LivroRead, LivroCount, PaginatedLivros
 
 logger = get_logger("MyBooks")
 
@@ -44,12 +44,22 @@ async def atualizar_livro(
     logger.info(f"Livro atualizado: {livro.id} - {livro.titulo}")
     return livro
 
-@router.get("/", response_model=List[LivroRead])
-async def listar_livros(session: AsyncSession = Depends(get_session)):
-    result = await session.execute(select(Livro))
+@router.get("/", response_model=PaginatedLivros)
+async def listar_livros(
+    session: AsyncSession = Depends(get_session),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1)
+):
+    query = select(Livro).offset(skip).limit(limit)
+    result = await session.execute(query)
     livros = result.scalars().all()
-    logger.info(f"Listagem de livros retornou {len(livros)} registros")
-    return livros
+
+    total_result = await session.execute(select(Livro))
+    total = len(total_result.scalars().all())
+
+    logger.info(f"Listagem paginada de livros: {len(livros)} de {total}")
+    return {"total": total, "items": livros}
+
 
 @router.get("/count", response_model=LivroCount)
 async def contar_livros(session: AsyncSession = Depends(get_session)):
@@ -70,7 +80,7 @@ async def deletar_livro(livro_id: int, session: AsyncSession = Depends(get_sessi
     logger.info(f"Livro deletado: ID {livro_id}")
     return {"message": "Livro deletado com sucesso"}
 
-@router.get("/filtro", response_model=List[LivroRead])
+@router.get("/filtro", response_model=PaginatedLivros)
 async def filtrar_livros(
     titulo: Optional[str] = Query(None),
     genero: Optional[str] = Query(None),
@@ -78,6 +88,8 @@ async def filtrar_livros(
     preco_max: Optional[float] = Query(None),
     autor_id: Optional[int] = Query(None),
     editora_id: Optional[int] = Query(None),
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1),
     session: AsyncSession = Depends(get_session)
 ):
     query = select(Livro)
@@ -102,7 +114,23 @@ async def filtrar_livros(
         query = query.where(Livro.editora_id == editora_id)
         filtros_aplicados.append(f"editora_id={editora_id}")
 
-    result = await session.execute(query)
+    offset = (page - 1) * limit
+
+    paginated_query = query.offset(offset).limit(limit)
+    result = await session.execute(paginated_query)
     livros = result.scalars().all()
-    logger.info(f"Filtro de livros retornou {len(livros)} registros - Filtros usados: {', '.join(filtros_aplicados) or 'nenhum'}")
-    return livros
+
+    total_result = await session.execute(query)
+    total = len(total_result.scalars().all())
+
+    logger.info(
+        f"Filtro de livros paginado retornou {len(livros)} de {total} registros - "
+        f"Filtros usados: {', '.join(filtros_aplicados) or 'nenhum'}"
+    )
+
+    return {
+        "page": page,
+        "limit": limit,
+        "total": total,
+        "items": livros
+    }

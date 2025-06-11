@@ -5,7 +5,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.future import select
 from app.database import get_session
 from app.models import Autor
-from app.schemas import AutorCreate, AutorUpdate, AutorRead, AutorCount
+from app.schemas import AutorCreate, AutorUpdate, AutorRead, AutorCount, PaginatedAutor
 from logs.logger import get_logger
 
 logger = get_logger("MyBooks")
@@ -44,12 +44,24 @@ async def atualizar_autor(
     logger.info(f"Autor atualizado: {autor.id} - {autor.nome}")
     return autor
 
-@router.get("/", response_model=list[AutorRead])
-async def listar_autores(session: AsyncSession = Depends(get_session)):
-    result = await session.execute(select(Autor))
+@router.get("/", response_model=PaginatedAutor)
+async def listar_autores(
+    page: int = Query(1, ge=1, description="Número da página"),
+    limit: int = Query(10, ge=1, le=100, description="Quantidade de registros por página"),
+    session: AsyncSession = Depends(get_session),
+):
+    offset = (page - 1) * limit
+
+    result_total = await session.execute(select(Autor))
+    total = len(result_total.scalars().all())
+
+    query = select(Autor).offset(offset).limit(limit)
+    result = await session.execute(query)
     autores = result.scalars().all()
-    logger.info(f"Listagem de autores retornou {len(autores)} registros")
-    return autores
+
+    logger.info(f"Listagem paginada de autores: page={page}, limit={limit}, retornando {len(autores)} de {total} registros")
+    
+    return PaginatedAutor(page=page, limit=limit, total=total, items=autores)
 
 @router.get("/count", response_model=AutorCount)
 async def contar_autores(session: AsyncSession = Depends(get_session)):
@@ -70,13 +82,14 @@ async def deletar_autor(autor_id: int, session: AsyncSession = Depends(get_sessi
     logger.info(f"Autor deletado: ID {autor_id}")
     return {"message": "Autor deletado com sucesso"}
 
-
-@router.get("/filtrar", response_model=List[AutorRead])
+@router.get("/filtrar", response_model=PaginatedAutor)
 async def filtrar_autores(
-    nome: Optional[str] = Query(None),
-    email: Optional[str] = Query(None),
-    data_nascimento: Optional[str] = Query(None),  
-    nacionalidade: Optional[str] = Query(None),
+    nome: Optional[str] = Query(None, description="Filtro pelo nome do autor"),
+    email: Optional[str] = Query(None, description="Filtro pelo email do autor"),
+    data_nascimento: Optional[str] = Query(None, description="Filtro pela data de nascimento no formato DD-MM-AAAA"),
+    nacionalidade: Optional[str] = Query(None, description="Filtro pela nacionalidade do autor"),
+    page: int = Query(1, ge=1, description="Número da página"),
+    limit: int = Query(10, ge=1, le=100, description="Quantidade de registros por página"),
     session: AsyncSession = Depends(get_session)
 ):
     query = select(Autor)
@@ -88,8 +101,8 @@ async def filtrar_autores(
     if nacionalidade:
         query = query.where(Autor.nacionalidade.ilike(f"%{nacionalidade}%"))
 
-    result = await session.execute(query)
-    autores = result.scalars().all()
+    result_total = await session.execute(query)
+    autores_filtrados = result_total.scalars().all()
 
     if data_nascimento:
         try:
@@ -97,7 +110,17 @@ async def filtrar_autores(
         except ValueError:
             logger.warning(f"Formato de data_nascimento inválido recebido: {data_nascimento}")
             raise HTTPException(status_code=400, detail="Formato de data_nascimento inválido (use DD-MM-AAAA).")
-        autores = [a for a in autores if a.data_nascimento == data_obj]
+        autores_filtrados = [a for a in autores_filtrados if a.data_nascimento == data_obj]
 
-    logger.info(f"Filtro de autores retornou {len(autores)} registros - Filtros usados: nome={nome}, email={email}, nacionalidade={nacionalidade}, data_nascimento={data_nascimento}")
-    return autores
+    total = len(autores_filtrados)
+
+    start = (page - 1) * limit
+    end = start + limit
+    autores_paginados = autores_filtrados[start:end]
+
+    logger.info(
+        f"Filtro paginado de autores retornou {len(autores_paginados)} registros de {total} - "
+        f"Filtros usados: nome={nome}, email={email}, nacionalidade={nacionalidade}, data_nascimento={data_nascimento}"
+    )
+
+    return PaginatedAutor(page=page, limit=limit, total=total, items=autores_paginados)

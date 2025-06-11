@@ -1,7 +1,6 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from datetime import date
-
 
 # ----------- AUTOR -----------
 
@@ -10,6 +9,7 @@ class AutorCreate(BaseModel):
     email: str
     data_nascimento: date
     nacionalidade: str
+    biografia: Optional[str] = None 
 
 
 class AutorUpdate(BaseModel):
@@ -17,6 +17,7 @@ class AutorUpdate(BaseModel):
     email: Optional[str] = None
     data_nascimento: Optional[date] = None
     nacionalidade: Optional[str] = None
+    biografia: Optional[str] = None  
 
 class AutorRead(BaseModel):
     id: int
@@ -24,13 +25,23 @@ class AutorRead(BaseModel):
     email: str
     data_nascimento: date
     nacionalidade: str
-
+    biografia: Optional[str] = None  
     class Config:
         orm_mode = True
+
 
 class AutorCount(BaseModel):
     total_autores: int
 
+
+class PaginatedAutor(BaseModel):
+    page: int
+    limit: int
+    total: int
+    items: List[AutorRead]
+
+    class Config:
+        orm_mode = True
 
 # ----------- EDITORA -----------
 
@@ -60,6 +71,14 @@ class EditoraRead(BaseModel):
 class EditoraCount(BaseModel):
     total_editoras: int
 
+class PaginatedEditoras(BaseModel):
+    page: int
+    limit: int
+    total: int
+    items: List[EditoraRead]
+
+    class Config:
+        orm_mode = True
 
 # ----------- LIVRO -----------
 
@@ -92,6 +111,9 @@ class LivroRead(BaseModel):
 class LivroCount(BaseModel):
     total_livros: int
 
+class PaginatedLivros(BaseModel):
+    total: int
+    items: List[LivroRead]
 
 # ----------- USUÁRIO -----------
 
@@ -117,6 +139,11 @@ class UsuarioUpdate(BaseModel):
     cpf: Optional[str] = None
     data_cadastro: Optional[date] = None
 
+class PaginatedUsuario(BaseModel):
+    page: int
+    limit: int
+    total: int
+    items: List[UsuarioRead]
 
 # ----------- PEDIDO -----------
 
@@ -146,6 +173,12 @@ class ContagemPedidos(BaseModel):
 class Config:
     orm_mode = True
 
+class PaginatedPedido(BaseModel):
+    page: int
+    limit: int
+    total: int
+    items: List[PedidoRead]
+
 # ----------- PAGAMENTO -----------
 
 class PagamentoCreate(BaseModel):
@@ -173,3 +206,9 @@ class PagamentoCount(BaseModel):
 
     class Config:
         orm_mode = True
+
+class PaginatedPagamentos(BaseModel):
+    page: int
+    limit: int
+    total: int
+    items: List[PagamentoRead]

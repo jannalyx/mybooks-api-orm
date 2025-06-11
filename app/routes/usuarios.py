@@ -5,7 +5,7 @@ from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_session
 from app.models import Usuario
-from app.schemas import UsuarioCreate, UsuarioUpdate, UsuarioRead, ContagemUsuarios
+from app.schemas import UsuarioCreate, UsuarioUpdate, UsuarioRead, ContagemUsuarios, PaginatedUsuario
 from logs.logger import get_logger
 
 logger = get_logger("MyBooks")
@@ -20,12 +20,20 @@ async def criar_usuario(usuario: UsuarioCreate, session: AsyncSession = Depends(
     logger.info(f"Usuário criado com sucesso: {novo_usuario.id} - {novo_usuario.nome} ({novo_usuario.email})")
     return novo_usuario
 
-@router.get("/", response_model=List[UsuarioRead])
-async def listar_usuarios(session: AsyncSession = Depends(get_session)):
-    result = await session.execute(select(Usuario))
+@router.get("/", response_model=PaginatedUsuario)
+async def listar_usuarios(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1),
+    session: AsyncSession = Depends(get_session)
+):
+    offset = (page - 1) * limit
+    result = await session.execute(select(Usuario).offset(offset).limit(limit))
     usuarios = result.scalars().all()
-    logger.info(f"Listagem de usuários: {len(usuarios)} encontrados")
-    return usuarios
+
+    total_result = await session.execute(select(func.count(Usuario.id)))
+    total = total_result.scalar()
+
+    return PaginatedUsuario(page=page, limit=limit, total=total, items=usuarios)
 
 @router.patch("/{usuario_id}", response_model=Usuario)
 async def atualizar_usuario(
@@ -76,12 +84,14 @@ async def deletar_usuario(usuario_id: int, session: AsyncSession = Depends(get_s
     logger.info(f"Usuário deletado: id={usuario_id}")
     return {"message": "Usuário deletado com sucesso"}
 
-@router.get("/filtrar", response_model=List[UsuarioRead])
+@router.get("/filtrar", response_model=PaginatedUsuario)
 async def filtrar_usuarios(
     nome: Optional[str] = Query(None),
     email: Optional[str] = Query(None),
     cpf: Optional[str] = Query(None),
     data_cadastro: Optional[str] = Query(None),
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1),
     session: AsyncSession = Depends(get_session)
 ):
     query = select(Usuario)
@@ -94,16 +104,24 @@ async def filtrar_usuarios(
         query = query.where(Usuario.cpf == cpf)
 
     result = await session.execute(query)
-    usuarios = result.scalars().all()
+    usuarios_filtrados = result.scalars().all()
 
     if data_cadastro:
         try:
             data_obj = datetime.strptime(data_cadastro, "%d-%m-%Y").date()
         except ValueError:
             raise HTTPException(status_code=400, detail="Formato de data_cadastro inválido. Use DD-MM-AAAA.")
-        usuarios = [u for u in usuarios if u.data_cadastro == data_obj]
+        usuarios_filtrados = [u for u in usuarios_filtrados if u.data_cadastro == data_obj]
+
+    total = len(usuarios_filtrados)
+
+    start = (page - 1) * limit
+    end = start + limit
+    usuarios_paginados = usuarios_filtrados[start:end]
 
     logger.info(
-        f"Filtro de usuários aplicado - Nome: {nome}, Email: {email}, CPF: {cpf}, Data Cadastro: {data_cadastro} | {len(usuarios)} encontrados"
-    )    
-    return usuarios
+        f"Filtro de usuários aplicado - Nome: {nome}, Email: {email}, CPF: {cpf}, Data Cadastro: {data_cadastro} | "
+        f"{total} encontrados, página {page} com limite {limit}"
+    )
+
+    return PaginatedUsuario(page=page, limit=limit, total=total, items=usuarios_paginados)

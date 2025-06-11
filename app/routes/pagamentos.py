@@ -6,7 +6,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.future import select
 from app.database import get_session
 from app.models import Pagamento
-from app.schemas import PagamentoCreate, PagamentoUpdate, PagamentoRead, PagamentoCount
+from app.schemas import PagamentoCreate, PagamentoUpdate, PagamentoRead, PagamentoCount, PaginatedPagamentos
 from logs.logger import get_logger
 
 logger = get_logger("MyBooks")
@@ -56,16 +56,27 @@ async def atualizar_pagamento(
         logger.error(f"Erro ao atualizar pagamento ID {pagamento_id}", exc_info=True)
         raise HTTPException(status_code=500, detail="Erro interno ao atualizar pagamento")
 
-@router.get("/", response_model=List[PagamentoRead])
-async def listar_pagamentos(session: AsyncSession = Depends(get_session)):
+@router.get("/listar", response_model=PaginatedPagamentos)
+async def listar_pagamentos(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1),
+    session: AsyncSession = Depends(get_session)
+):
     try:
-        result = await session.execute(select(Pagamento))
+        offset = (page - 1) * limit
+
+        total_result = await session.execute(select(func.count(Pagamento.id)))
+        total = total_result.scalar_one()
+
+        result = await session.execute(select(Pagamento).offset(offset).limit(limit))
         pagamentos = result.scalars().all()
-        logger.info(f"Listagem de pagamentos retornou {len(pagamentos)} registro(s)")
-        return pagamentos
+
+        logger.info(f"Listagem paginada de pagamentos: página {page}, limite {limit}, total {total}")
+        return PaginatedPagamentos(page=page, limit=limit, total=total, items=pagamentos)
     except Exception:
-        logger.error("Erro ao listar pagamentos", exc_info=True)
+        logger.error("Erro ao listar pagamentos com paginação", exc_info=True)
         raise HTTPException(status_code=500, detail="Erro interno ao listar pagamentos")
+
 
 @router.get("/count", response_model=PagamentoCount)
 async def contar_pagamentos(session: AsyncSession = Depends(get_session)):
@@ -96,13 +107,15 @@ async def deletar_pagamento(pagamento_id: int, session: AsyncSession = Depends(g
         logger.error(f"Erro ao deletar pagamento ID {pagamento_id}", exc_info=True)
         raise HTTPException(status_code=500, detail="Erro interno ao deletar pagamento")
 
-@router.get("/filtrar", response_model=List[PagamentoRead])
+@router.get("/filtro", response_model=PaginatedPagamentos)
 async def filtrar_pagamentos(
     pedido_id: Optional[int] = Query(None),
-    data_pagamento: Optional[str] = Query(None), 
+    data_pagamento: Optional[str] = Query(None),
     valor_min: Optional[float] = Query(None),
     valor_max: Optional[float] = Query(None),
     forma_pagamento: Optional[str] = Query(None),
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1),
     session: AsyncSession = Depends(get_session)
 ):
     try:
@@ -134,10 +147,14 @@ async def filtrar_pagamentos(
             pagamentos = [p for p in pagamentos if p.valor <= valor_max]
             filtros_aplicados.append(f"valor_max={valor_max}")
 
-        logger.info(f"{len(pagamentos)} pagamento(s) encontrado(s) com filtros: {', '.join(filtros_aplicados) or 'nenhum'}")
-        return pagamentos
+        total = len(pagamentos)
+        offset = (page - 1) * limit
+        pagamentos_paginados = pagamentos[offset:offset + limit]
+
+        logger.info(f"{len(pagamentos_paginados)} pagamento(s) retornado(s) com filtros: {', '.join(filtros_aplicados) or 'nenhum'}")
+        return PaginatedPagamentos(page=page, limit=limit, total=total, items=pagamentos_paginados)
     except HTTPException:
         raise
     except Exception:
-        logger.error("Erro ao filtrar pagamentos", exc_info=True)
+        logger.error("Erro ao filtrar pagamentos com paginação", exc_info=True)
         raise HTTPException(status_code=500, detail="Erro interno ao filtrar pagamentos")

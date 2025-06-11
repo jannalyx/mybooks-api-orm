@@ -29,3 +29,41 @@
 2025-06-10 15:48:15,586 - INFO - MyBooks - Filtro de autores retornou 1 registros - Filtros usados: nome=None, email=None, nacionalidade=Chinês, data_nascimento=None
 2025-06-10 15:48:27,587 - INFO - MyBooks - Filtro de autores retornou 0 registros - Filtros usados: nome=None, email=None, nacionalidade=Italiano, data_nascimento=None
 2025-06-10 15:48:41,955 - INFO - MyBooks - Autor deletado: ID 3
+2025-06-10 22:49:26,021 - INFO - MyBooks - Listagem paginada de livros: 1 de 2
+2025-06-10 22:49:45,451 - INFO - MyBooks - Listagem paginada de livros: 1 de 2
+2025-06-10 22:49:50,626 - INFO - MyBooks - Listagem paginada de livros: 1 de 2
+2025-06-10 22:49:55,595 - INFO - MyBooks - Listagem paginada de livros: 1 de 2
+2025-06-10 22:52:27,731 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, retornando 1 de 1 registros
+2025-06-10 22:58:11,983 - INFO - MyBooks - Filtro de livros paginado retornou 2 de 2 registros - Filtros usados: nenhum
+2025-06-10 23:00:51,727 - INFO - MyBooks - Listagem paginada de livros: 1 de 2
+2025-06-10 23:01:02,903 - INFO - MyBooks - Listagem paginada de editoras retornou 1 de 1 registros
+2025-06-10 23:04:26,103 - INFO - MyBooks - Listagem paginada de pagamentos: página 1, limite 10, total 2
+2025-06-10 23:04:26,104 - ERROR - MyBooks - Erro ao listar pagamentos com paginação
+Traceback (most recent call last):
+  File "C:\Users\janai\ufc\persist\mybooks-api-orm\app\routes\pagamentos.py", line 75, in listar_pagamentos
+    return PaginatedPagamento(page=page, limit=limit, total=total, items=pagamentos)
+NameError: name 'PaginatedPagamento' is not defined. Did you mean: 'PaginatedPagamentos'?
+2025-06-10 23:05:19,030 - INFO - MyBooks - Listagem paginada de pagamentos: página 1, limite 10, total 2
+2025-06-10 23:06:14,854 - INFO - MyBooks - 2 pagamento(s) retornado(s) com filtros: nenhum
+2025-06-10 23:06:20,937 - INFO - MyBooks - 1 pagamento(s) retornado(s) com filtros: nenhum
+2025-06-10 23:08:04,981 - INFO - MyBooks - Listando pedidos - Página: 1, Limite: 1
+2025-06-10 23:08:10,333 - INFO - MyBooks - Listando pedidos - Página: 1, Limite: 2
+2025-06-10 23:08:33,763 - INFO - MyBooks - Filtrando pedidos com paginação
+2025-06-10 23:08:33,773 - INFO - MyBooks - 1 pedido(s) retornado(s) com filtros: nenhum
+2025-06-10 23:08:41,810 - INFO - MyBooks - Filtrando pedidos com paginação
+2025-06-10 23:08:41,813 - INFO - MyBooks - 1 pedido(s) retornado(s) com filtros: valor_min=40.0
+2025-06-10 23:08:47,619 - INFO - MyBooks - Filtrando pedidos com paginação
+2025-06-10 23:08:47,623 - INFO - MyBooks - 1 pedido(s) retornado(s) com filtros: valor_min=45.5
+2025-06-10 23:12:24,867 - INFO - MyBooks - Filtro de usuários aplicado - Nome: None, Email: None, CPF: None, Data Cadastro: None | 2 encontrados, página 1 com limite 2
+2025-06-10 23:12:35,424 - INFO - MyBooks - Filtro de usuários aplicado - Nome: Janaina, Email: None, CPF: None, Data Cadastro: None | 1 encontrados, página 1 com limite 2
+2025-06-10 23:13:36,090 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, retornando 1 de 1 registros
+2025-06-10 23:13:43,768 - INFO - MyBooks - Filtro paginado de autores retornou 1 registros de 1 - Filtros usados: nome=None, email=None, nacionalidade=None, data_nascimento=None
+2025-06-10 23:13:56,947 - INFO - MyBooks - Listagem paginada de editoras retornou 1 de 1 registros
+2025-06-10 23:14:32,179 - INFO - MyBooks - Filtro paginado de autores retornou 1 registros de 1 - Filtros usados: nome=None, email=None, nacionalidade=None, data_nascimento=None
+2025-06-10 23:17:44,186 - INFO - MyBooks - Filtro paginado de autores retornou 1 registros de 1 - Filtros usados: nome=None, email=None, nacionalidade=None, data_nascimento=None
+2025-06-10 23:17:57,946 - INFO - MyBooks - Filtro paginado de autores retornou 1 registros de 1 - Filtros usados: nome=None, email=None, nacionalidade=None, data_nascimento=None
+2025-06-10 23:18:10,496 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, retornando 1 de 1 registros
+2025-06-10 23:21:44,566 - INFO - MyBooks - Filtro paginado de autores retornou 1 registros de 1 - Filtros usados: nome=None, email=None, nacionalidade=None, data_nascimento=None
+2025-06-10 23:22:23,437 - INFO - MyBooks - Listagem paginada de autores: page=1, limit=10, retornando 1 de 1 registros
+2025-06-10 23:45:47,704 - INFO - MyBooks - Autor criado: 2 - Clarice Lispector (clarice.lispector@example.com)
+2025-06-10 23:48:54,829 - INFO - MyBooks - Autor atualizado: 1 - J.K.Rowling
