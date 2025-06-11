@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from app.database import get_session
-from app.models import Pedido
+from app.models import Pedido, Livro, PedidoLivroLink, Usuario
 from app.schemas import PedidoCreate, PedidoUpdate, PedidoRead, ContagemPedidos, PaginatedPedido
 from logs.logger import get_logger
 
@@ -14,22 +14,39 @@ logger = get_logger("MyBooks")
 
 router = APIRouter(prefix="/pedidos", tags=["Pedidos"])
 
-@router.post("/", response_model=Pedido)
+@router.post("/", response_model=PedidoRead)
 async def criar_pedido(pedido: PedidoCreate, session: AsyncSession = Depends(get_session)):
     try:
         logger.info(f"Criando pedido: {pedido}")
-        novo_pedido = Pedido(**pedido.dict())
+
+        livro_ids = pedido.livro_ids
+        pedido_data = pedido.dict(exclude={"livro_ids"})
+        novo_pedido = Pedido(**pedido_data)
+
         session.add(novo_pedido)
         await session.commit()
         await session.refresh(novo_pedido)
+
+        for livro_id in livro_ids:
+            result = await session.execute(select(Livro).where(Livro.id == livro_id))
+            livro = result.scalar_one_or_none()
+            if not livro:
+                raise HTTPException(status_code=404, detail=f"Livro com ID {livro_id} não encontrado")
+            
+            link = PedidoLivroLink(pedido_id=novo_pedido.id, livro_id=livro_id)
+            session.add(link)
+
+        await session.commit()
         logger.info(f"Pedido criado com ID {novo_pedido.id}")
         return novo_pedido
+
     except IntegrityError as e:
         logger.error(f"Erro de integridade ao criar pedido: {e}")
         raise HTTPException(status_code=400, detail="Dados inválidos para criar pedido.")
-    except Exception:
-        raise HTTPException(status_code=500, detail="Erro interno ao criar pedido")
-
+    except Exception as e:
+        logger.error(f"Erro inesperado: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno ao criar pedido.")
+    
 @router.patch("/{pedido_id}", response_model=Pedido)
 async def atualizar_pedido(
     pedido_id: int,

@@ -152,6 +152,7 @@ class PedidoCreate(BaseModel):
     data_pedido: date
     status: str
     valor_total: float
+    livro_ids: List[int]
 
 
 class PedidoUpdate(BaseModel):
