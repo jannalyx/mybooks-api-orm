@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import func
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.future import select
 from app.database import get_session
@@ -135,3 +136,24 @@ async def filtrar_autores(
     )
 
     return PaginatedAutor(page=page, limit=limit, total=total, items=autores_paginados)
+
+@router.get("/ordenado", response_model=PaginatedAutor)
+async def listar_autores_ordenados(
+    page: int = Query(1, ge=1, description="Número da página"),
+    limit: int = Query(10, ge=1, le=100, description="Quantidade de registros por página"),
+    session: AsyncSession = Depends(get_session),
+):
+    offset = (page - 1) * limit
+
+    result_total = await session.execute(select(Autor))
+    total = len(result_total.scalars().all())
+
+    query = select(Autor).order_by(Autor.nome.asc()).offset(offset).limit(limit)
+    result = await session.execute(query)
+    autores = result.scalars().all()
+
+    logger.info(
+        f"Listagem paginada de autores ordenados alfabeticamente: page={page}, limit={limit}, retornando {len(autores)} de {total} registros"
+    )
+
+    return PaginatedAutor(page=page, limit=limit, total=total, items=autores)

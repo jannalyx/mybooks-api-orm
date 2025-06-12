@@ -123,6 +123,7 @@ class LivroInfo(BaseModel):
     titulo: str
     autor: Optional[str]
     editora: Optional[str]
+    
 
 # ----------- USUÁRIO -----------
 

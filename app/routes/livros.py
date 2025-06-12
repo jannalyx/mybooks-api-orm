@@ -1,12 +1,12 @@
 from typing import List, Optional
-from sqlalchemy import func
+from sqlalchemy import desc, func
 from sqlalchemy.orm import joinedload
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.future import select
 from logs.logger import get_logger
 from app.database import get_session
-from app.models import Livro
+from app.models import Livro, PedidoLivroLink
 from app.schemas import LivroCreate, LivroUpdate, LivroRead, LivroCount, PaginatedLivros, LivroInfo
 
 logger = get_logger("MyBooks")
@@ -192,3 +192,35 @@ async def detalhes_livro(
         autor=livro.autor.nome if livro.autor else None,
         editora=livro.editora.nome if livro.editora else None
     )
+
+@router.get("/mais-vendidos", response_model=List[LivroRead])
+async def listar_livros_mais_vendidos(
+    limit: int = Query(10, ge=1),
+    session: AsyncSession = Depends(get_session)
+):
+
+    subquery = (
+        select(
+            PedidoLivroLink.livro_id,
+            func.count(PedidoLivroLink.livro_id).label("vendas")
+        )
+        .group_by(PedidoLivroLink.livro_id)
+        .order_by(desc("vendas"))
+        .limit(limit)
+        .subquery()
+    )
+
+
+    stmt = (
+        select(Livro)
+        .join(subquery, Livro.id == subquery.c.livro_id)
+        .order_by(desc(subquery.c.vendas))
+    )
+
+    result = await session.execute(stmt)
+    livros = result.scalars().all()
+
+    if not livros:
+        raise HTTPException(status_code=404, detail="Nenhum livro vendido encontrado")
+
+    return livros

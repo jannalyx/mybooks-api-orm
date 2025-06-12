@@ -196,3 +196,4 @@ async def filtrar_pedidos(
     except Exception:
         logger.error("Erro ao filtrar pedidos com paginação", exc_info=True)
         raise HTTPException(status_code=500, detail="Erro interno ao filtrar pedidos")
+
