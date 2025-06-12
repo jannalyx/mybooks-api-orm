@@ -398,3 +398,4 @@ DETAIL:  Chave (pedido_id)=(2) já existe.
 2025-06-11 20:41:48,882 - INFO - MyBooks - Filtrando pedidos por usuario_id=5
 2025-06-11 20:44:19,987 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=None
 2025-06-11 20:45:35,243 - INFO - MyBooks - Listando livros - página 1, limite 10, autor_id=None
+2025-06-11 21:22:23,278 - INFO - MyBooks - Listagem paginada de autores ordenados alfabeticamente: page=1, limit=10, retornando 10 de 10 registros

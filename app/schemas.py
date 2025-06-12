@@ -210,7 +210,7 @@ class PedidoUpdate(BaseModel):
 
 class PedidoRead(BaseModel):
     id: int
-    usuario_id: int
+    usuario_id: Optional[int]
     data_pedido: date
     status: str
     valor_total: float

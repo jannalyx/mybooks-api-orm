@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List, Optional
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import selectinload
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from app.database import get_session
@@ -86,28 +87,34 @@ async def atualizar_pedido(
         raise
     except Exception:
         raise HTTPException(status_code=500, detail="Erro interno ao atualizar pedido")
-
+    
 @router.get("/", response_model=PaginatedPedido)
 async def listar_pedidos(
     usuario_id: Optional[int] = Query(None),
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1),
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
 ):
     offset = (page - 1) * limit
 
-    query = select(Pedido)
     if usuario_id is not None:
-        logger.info(f"Filtrando pedidos por usuario_id={usuario_id}")
-        query = query.where(Pedido.usuario_id == usuario_id)
-
-    total_result = await session.execute(select(func.count()).select_from(query.subquery()))
-    total = total_result.scalar()
+        total = await session.scalar(
+            select(func.count(Pedido.id)).where(Pedido.usuario_id == usuario_id)
+        )
+        query = (
+            select(Pedido)
+            .options(selectinload(Pedido.usuario), selectinload(Pedido.pagamento))
+            .where(Pedido.usuario_id == usuario_id)
+        )
+    else:
+        total = await session.scalar(select(func.count(Pedido.id)))
+        query = select(Pedido).options(selectinload(Pedido.usuario), selectinload(Pedido.pagamento))
 
     result = await session.execute(query.offset(offset).limit(limit))
     pedidos = result.scalars().all()
 
     return PaginatedPedido(page=page, limit=limit, total=total, items=pedidos)
+
 
 @router.get("/contar", response_model=ContagemPedidos)
 async def contar_pedidos(session: AsyncSession = Depends(get_session)):
